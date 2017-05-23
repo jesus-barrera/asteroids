@@ -1,0 +1,15 @@
+#ifndef _TOOLS_H_INCLUDED_
+#define _TOOLS_H_INCLUDED_
+
+#define PI 3.14159265358979323846
+
+typedef struct Point Point;
+
+struct Point {
+    float x;
+    float y;
+};
+
+float uniform(float min, float max);
+
+#endif
