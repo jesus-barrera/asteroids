@@ -3,6 +3,7 @@
 #include "game.h"
 #include "game_scene.h"
 #include "asteroid.h"
+#include "spaceship.h"
 
 SDL_bool init();
 void handleEvent(SDL_Event *event);
@@ -26,6 +27,11 @@ int main(int argc, char *argv[])
     asteroid->velocity = 5;
     asteroid->angle = 1;
 
+    Spaceship *ship = new_spaceship(10, 10);
+    ship->x_velocity = 1;
+
+    time_step = 1;
+
     current_scene = &game_scene;
     quit = SDL_FALSE;
 
@@ -42,9 +48,11 @@ int main(int argc, char *argv[])
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
         draw_asteroid(asteroid, renderer);
+        draw_spaceship(ship, renderer);
         SDL_RenderPresent(renderer);
 
         move_asteroid(asteroid);
+        move_spaceship(ship);
 
         SDL_Delay(10);
     }

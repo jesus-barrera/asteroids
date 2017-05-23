@@ -3,6 +3,8 @@
 SDL_Rect info_viewport;
 SDL_Rect game_viewport;
 
+float time_step;
+
 void set_viewports()
 {
     info_viewport.x = 0;

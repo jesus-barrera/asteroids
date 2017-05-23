@@ -72,7 +72,7 @@ void move_asteroid(Asteroid *asteroid)
 
 
     // caculate movement
-    distance = asteroid->velocity * 1;
+    distance = asteroid->velocity * time_step;
 
     x_step = cos(asteroid->angle) * distance;
     y_step = sin(asteroid->angle) * distance;
@@ -109,22 +109,5 @@ void move_asteroid(Asteroid *asteroid)
  */
 void draw_asteroid(Asteroid *asteroid, SDL_Renderer *renderer)
 {
-    int from, next, last;
-
-    Point *points = asteroid->points;
-
-    for (from = 0, last = asteroid->edges - 1; from < last; from++) {
-        next = from + 1;
-
-        SDL_RenderDrawLine(
-            renderer,
-            points[from].x, points[from].y,
-            points[next].x, points[next].y);
-    }
-
-    // close
-    SDL_RenderDrawLine(
-        renderer,
-        points[last].x, points[last].y,
-        points[0].x, points[0].y);
+    draw_polygon(renderer, asteroid->points, asteroid->edges);
 }

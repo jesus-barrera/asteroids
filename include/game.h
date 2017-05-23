@@ -9,6 +9,8 @@
 extern SDL_Rect info_viewport;
 extern SDL_Rect game_viewport;
 
+extern float time_step;
+
 void set_viewports();
 
 #endif
