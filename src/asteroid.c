@@ -1,25 +1,22 @@
 #include <math.h>
 #include "asteroid.h"
-
-#define PI 3.14159265358979323846
+#include "game.h"
 
 static void set_asteroid_points(Asteroid *asteroid);
-
-float uniform(float min, float max)
-{
-    return (rand() / (float)RAND_MAX) * (max - min) + min;
-}
 
 /**
  * Create a new asteroid.
  */
-Asteroid *new_asteroid(float radius, int edges, SDL_Point position)
+Asteroid *new_asteroid(float radius, int edges, int x_pos, int y_pos)
 {
     Asteroid *asteroid = (Asteroid *)malloc(sizeof(Asteroid));
 
     asteroid->radius = radius;
     asteroid->edges = edges;
-    asteroid->position = position;
+    asteroid->position.x = x_pos;
+    asteroid->position.y = y_pos;
+    asteroid->velocity = 0;
+    asteroid->angle = 0;
 
     set_asteroid_points(asteroid);
 
@@ -34,7 +31,7 @@ void set_asteroid_points(Asteroid *asteroid)
     int i;
     float angle, angle_step, angle_min, angle_max, radius;
 
-    asteroid->points = (SDL_Point *)malloc(sizeof(SDL_Point) * asteroid->edges);
+    asteroid->points = (Point *)malloc(sizeof(Point) * asteroid->edges);
 
     angle_step = 2 * PI / asteroid->edges;
     angle_min = 0;
@@ -64,9 +61,42 @@ void delete_asteroid(Asteroid *asteroid)
 /**
  * Move asteroid.
  */
-void move_asteroid(Asteroid *asteroid, int x_step, int y_step)
+void move_asteroid(Asteroid *asteroid)
 {
     int i;
+    float x_step, y_step, distance;
+    Point position;
+
+    // save asteroid position
+    position = asteroid->position;
+
+
+    // caculate movement
+    distance = asteroid->velocity * 1;
+
+    x_step = cos(asteroid->angle) * distance;
+    y_step = sin(asteroid->angle) * distance;
+
+    // set new asteroid position
+    asteroid->position.x += x_step;
+    asteroid->position.y += y_step;
+
+    // detect edge collision
+    if (asteroid->position.x > game_viewport.w) {
+        asteroid->position.x = game_viewport.x;
+    } else if (asteroid->position.x < 0) {
+        asteroid->position.x = game_viewport.w;
+    }
+
+    if (asteroid->position.y > game_viewport.h) {
+        asteroid->position.y = 0;
+    } else if (asteroid->position.y < 0) {
+        asteroid->position.y = game_viewport.h;
+    }
+
+    // calculate asteroid final displacement and move points
+    x_step = asteroid->position.x - position.x;
+    y_step = asteroid->position.y - position.y;
 
     for (i = 0; i < asteroid->edges; i++) {
         asteroid->points[i].x += x_step;
@@ -81,7 +111,7 @@ void draw_asteroid(Asteroid *asteroid, SDL_Renderer *renderer)
 {
     int from, next, last;
 
-    SDL_Point *points = asteroid->points;
+    Point *points = asteroid->points;
 
     for (from = 0, last = asteroid->edges - 1; from < last; from++) {
         next = from + 1;

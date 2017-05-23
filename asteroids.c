@@ -1,16 +1,12 @@
 #include "SDL.h"
 
+#include "game.h"
 #include "game_scene.h"
-
-#define MAIN_WIN_HEIGHT 400
-#define MAIN_WIN_WIDTH 600
+#include "asteroid.h"
 
 SDL_bool init();
 void handleEvent(SDL_Event *event);
 void clean();
-
-SDL_Rect info_viewport = {0,  0, MAIN_WIN_WIDTH, 80};
-SDL_Rect game_viewport = {0, 80, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT - 80};
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
@@ -26,18 +22,31 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    Asteroid *asteroid = new_asteroid(50, 18, 200, 200);
+    asteroid->velocity = 5;
+    asteroid->angle = 1;
+
     current_scene = &game_scene;
     quit = SDL_FALSE;
+
+    SDL_RenderSetViewport(renderer, &game_viewport);
 
     while (quit == SDL_FALSE) {
         while (SDL_PollEvent(&event)) {
             handleEvent(&event);
         }
 
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
         SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+        draw_asteroid(asteroid, renderer);
         SDL_RenderPresent(renderer);
 
-        SDL_Delay(100);
+        move_asteroid(asteroid);
+
+        SDL_Delay(10);
     }
 
     clean();
@@ -60,7 +69,7 @@ SDL_bool init()
                 "Asteroids Game",
                 SDL_WINDOWPOS_UNDEFINED,
                 SDL_WINDOWPOS_UNDEFINED,
-                MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT,
+                WINDOW_WIDTH, WINDOW_HEIGHT,
                 SDL_WINDOW_SHOWN);
 
     if (window == NULL) {
@@ -74,6 +83,10 @@ SDL_bool init()
         printf("Couldn't create renderer: %s \n", SDL_GetError());
         return SDL_FALSE;
     }
+
+    // game things
+    srand(time(NULL)); // initialize rand module
+    set_viewports();
 
     return SDL_TRUE;
 }

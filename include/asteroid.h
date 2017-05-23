@@ -2,22 +2,25 @@
 #define _ASTEROID_H_INCLUDED_
 
 #include <SDL.h>
+#include "tools.h"
 
 #define MIN_RADIUS 0.65
 
+typedef struct Asteroid Asteroid;
+
 struct Asteroid {
     float radius;
+    float velocity;
+    float angle;
     int edges;
-    SDL_Point *points;
-    SDL_Point position;
+    Point position;
+    Point *points;
 };
-
-typedef struct Asteroid Asteroid;
 
 /**
  * Create an asteroid.
  */
-Asteroid *new_asteroid(float radius, int edges, SDL_Point position);
+Asteroid *new_asteroid(float radius, int edges, int x, int y);
 
 /**
  * Deallocate asteroid.
@@ -27,7 +30,7 @@ void delete_asteroid(Asteroid *asteroid);
 /**
  * Move asteroid.
  */
-void move_asteroid(Asteroid *asteroid, int x_step, int y_step);
+void move_asteroid(Asteroid *asteroid);
 
 /**
  * Draw the asteroid.
