@@ -1,7 +1,6 @@
 #ifndef _ASTEROID_H_INCLUDED_
 #define _ASTEROID_H_INCLUDED_
 
-#include <SDL.h>
 #include "object.h"
 
 #define MIN_RADIUS 0.65

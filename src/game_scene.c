@@ -7,6 +7,8 @@
 #define SHIP_VELOCITY_UPDATE 0.05
 #define SHIP_ANGLE_UPDATE 0.05
 
+void handleKeys();
+
 Scene game_scene = {enter, update, render, handleEvent};
 
 Asteroid *asteroids[NUM_ASTEROIDS];
@@ -24,7 +26,7 @@ void enter()
                 uniform(1, 2));
     }
 
-    ship = new_spaceship(game_viewport.w / 2, game_viewport.h / 2);
+    ship = new_spaceship(game_viewport.w / 2, game_viewport.h / 2, -PI / 2, 0);
 }
 
 void update()
@@ -37,16 +39,7 @@ void update()
 
     move_spaceship(ship);
 
-    const Uint8* keystates = SDL_GetKeyboardState(NULL);
-
-    if (keystates[SDL_SCANCODE_LEFT]) {
-        ship->angle -= SHIP_ANGLE_UPDATE * time_step;
-    } else if (keystates[SDL_SCANCODE_RIGHT]) {
-        ship->angle += SHIP_ANGLE_UPDATE * time_step;
-    } else if (keystates[SDL_SCANCODE_UP]) {
-        ship->x_velocity += cos(ship->angle) * 0.05;
-        ship->y_velocity += sin(ship->angle) * 0.05;
-    }
+    handleKeys();
 }
 
 void render(SDL_Renderer *renderer)
@@ -63,12 +56,25 @@ void render(SDL_Renderer *renderer)
     draw_spaceship(ship, renderer);
 }
 
+void handleEvent(SDL_Event *event)
+{
+
+}
+
 void check_collisions()
 {
 
 }
 
-void handleEvent(SDL_Event *event)
+void handleKeys()
 {
+    const Uint8* keystates = SDL_GetKeyboardState(NULL);
 
+    if (keystates[SDL_SCANCODE_LEFT]) {
+        ship->obj.angle -= SHIP_ANGLE_UPDATE * time_step;
+    } else if (keystates[SDL_SCANCODE_RIGHT]) {
+        ship->obj.angle += SHIP_ANGLE_UPDATE * time_step;
+    } else if (keystates[SDL_SCANCODE_UP]) {
+        add_object_velocity(&ship->obj, SHIP_VELOCITY_UPDATE * time_step);
+    }
 }
