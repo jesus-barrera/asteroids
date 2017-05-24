@@ -12,8 +12,10 @@ struct Object {
 };
 
 void set_object_props(Object *obj, int x, int y, float angle, float velocity);
+void update_object_position(Object *obj);
 void move_object(Object *obj);
 void set_object_velocity(Object *obj, float magnitude);
 void add_object_velocity(Object *obj, float magnitude);
+SDL_bool is_off_screen(Object *obj);
 
 #endif

@@ -2,17 +2,20 @@
 #include "game_scene.h"
 #include "spaceship.h"
 #include "asteroid.h"
+#include "bullet.h"
 
 #define NUM_ASTEROIDS 7
 #define SHIP_VELOCITY_UPDATE 0.05
 #define SHIP_ANGLE_UPDATE 0.05
 
 void handleKeys();
+void shoot();
 
 Scene game_scene = {enter, update, render, handleEvent};
 
 Asteroid *asteroids[NUM_ASTEROIDS];
 Spaceship *ship;
+Bullet *bullet;
 
 void enter()
 {
@@ -27,6 +30,8 @@ void enter()
     }
 
     ship = new_spaceship(game_viewport.w / 2, game_viewport.h / 2, -PI / 2, 0);
+
+    bullet = new_bullet(0, 0, 0, 0);
 }
 
 void update()
@@ -38,6 +43,7 @@ void update()
     }
 
     move_spaceship(ship);
+    move_bullet(bullet);
 
     handleKeys();
 }
@@ -54,16 +60,20 @@ void render(SDL_Renderer *renderer)
     }
 
     draw_spaceship(ship, renderer);
+    draw_bullet(bullet, renderer);
 }
 
 void handleEvent(SDL_Event *event)
 {
+    SDL_Keycode key;
 
-}
+    if (event->type == SDL_KEYDOWN) {
+        key = event->key.keysym.sym;
 
-void check_collisions()
-{
-
+        if (key == SDLK_SPACE) {
+            shoot();
+        }
+    }
 }
 
 void handleKeys()
@@ -71,10 +81,28 @@ void handleKeys()
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
 
     if (keystates[SDL_SCANCODE_LEFT]) {
-        ship->obj.angle -= SHIP_ANGLE_UPDATE * time_step;
+        rotate_spaceship(ship, SHIP_ANGLE_UPDATE * time_step * -1);
     } else if (keystates[SDL_SCANCODE_RIGHT]) {
-        ship->obj.angle += SHIP_ANGLE_UPDATE * time_step;
+        rotate_spaceship(ship, SHIP_ANGLE_UPDATE * time_step);
     } else if (keystates[SDL_SCANCODE_UP]) {
         add_object_velocity(&ship->obj, SHIP_VELOCITY_UPDATE * time_step);
+    }
+}
+
+void shoot()
+{
+    if (! bullet->shot) {
+        float height;
+
+        height = SPACESHIP_HEIGHT / 2.0;
+
+        // place bullet
+        bullet->obj.position.x = ship->obj.position.x + cos(ship->obj.angle) * height;
+        bullet->obj.position.y = ship->obj.position.y + sin(ship->obj.angle) * height;
+        bullet->obj.angle = ship->obj.angle;
+
+        bullet->shot = SDL_TRUE;
+
+        set_object_velocity(&bullet->obj, 5);
     }
 }
