@@ -8,10 +8,7 @@ Spaceship *new_spaceship(int x, int y, float angle, float velocity)
 {
     Spaceship *ship = (Spaceship *)malloc(sizeof(Spaceship));
 
-    ship->obj.position.x = x;
-    ship->obj.position.y = y;
-    ship->obj.angle = angle;
-    set_object_velocity(&ship->obj, velocity);
+    set_object_props(&ship->obj, x, y, angle, velocity);
 
     ship->edges = 3;
     ship->vertices = (Point *)malloc(sizeof(Point) * ship->edges);

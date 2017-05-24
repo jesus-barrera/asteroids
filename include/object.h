@@ -11,6 +11,7 @@ struct Object {
     float angle;
 };
 
+void set_object_props(Object *obj, int x, int y, float angle, float velocity);
 void move_object(Object *obj);
 void set_object_velocity(Object *obj, float magnitude);
 void add_object_velocity(Object *obj, float magnitude);

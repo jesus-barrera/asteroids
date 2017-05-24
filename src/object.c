@@ -5,6 +5,14 @@
 void wrap(float *pos, int left, int right);
 void set_velocity_components(Point *velocity, float angle, float magnitude);
 
+void set_object_props(Object *obj, int x, int y, float angle, float velocity)
+{
+    obj->position.x = x;
+    obj->position.y = y;
+    obj->angle = angle; // important! set angle before velocity
+    set_object_velocity(obj, velocity);
+}
+
 void move_object(Object *obj)
 {
     // update positions
@@ -31,7 +39,7 @@ void add_object_velocity(Object *obj, float magnitude)
 }
 
 /**
- * Checks if a value is off screen, if so, moves it to the opossite edge.
+ * Checks if a value is off screen, if so, moves it to the opposite edge.
  */
 void wrap(float *pos, int left, int right)
 {

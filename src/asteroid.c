@@ -10,11 +10,7 @@ Asteroid *new_asteroid(float radius, int edges, int x, int y, float angle, float
 
     asteroid->radius = radius;
     asteroid->edges = edges;
-    asteroid->obj.position.x = x;
-    asteroid->obj.position.y = y;
-    asteroid->obj.angle = angle; // important! set angle before velocity
-    set_object_velocity(&(asteroid->obj), velocity);
-
+    set_object_props(&asteroid->obj, x, y, angle, velocity);
     set_asteroid_vetices(asteroid);
 
     return asteroid;
