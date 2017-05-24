@@ -4,6 +4,8 @@
 #include "asteroid.h"
 
 #define NUM_ASTEROIDS 7
+#define SHIP_VELOCITY_UPDATE 0.05
+#define SHIP_ANGLE_UPDATE 0.05
 
 Scene game_scene = {enter, update, render, handleEvent};
 
@@ -15,9 +17,11 @@ void enter()
     int i;
 
     for (i = 0; i < NUM_ASTEROIDS; i++) {
-        asteroids[i] = new_asteroid(uniform(18, 50), 18, uniform(0, game_viewport.w), uniform(0, game_viewport.h));
-        asteroids[i]->velocity = uniform(1, 2);
-        asteroids[i]->angle = uniform(0, 2 * PI);
+        asteroids[i] = new_asteroid(
+                uniform(18, 50), 18,
+                uniform(0, game_viewport.w), uniform(0, game_viewport.h),
+                uniform(0, 2 * PI),
+                uniform(1, 2));
     }
 
     ship = new_spaceship(game_viewport.w / 2, game_viewport.h / 2);
@@ -36,9 +40,9 @@ void update()
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
 
     if (keystates[SDL_SCANCODE_LEFT]) {
-        ship->angle -= 0.05;
+        ship->angle -= SHIP_ANGLE_UPDATE * time_step;
     } else if (keystates[SDL_SCANCODE_RIGHT]) {
-        ship->angle += 0.05;
+        ship->angle += SHIP_ANGLE_UPDATE * time_step;
     } else if (keystates[SDL_SCANCODE_UP]) {
         ship->x_velocity += cos(ship->angle) * 0.05;
         ship->y_velocity += sin(ship->angle) * 0.05;

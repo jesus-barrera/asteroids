@@ -2,14 +2,14 @@
 #include "game.h"
 #include "object.h"
 
-void wrap(int *pos, int left, int right);
+void wrap(float *pos, int left, int right);
 void set_velocity_components(Point *velocity, float angle, float magnitude);
 
 void move_object(Object *obj)
 {
     // update positions
-    obj->position.x += object->velocity.x * time_step;
-    obj->position.y += object->velocity.y * time_step;
+    obj->position.x += obj->velocity.x * time_step;
+    obj->position.y += obj->velocity.y * time_step;
 
     // wrap object
     wrap(&(obj->position.x), 0, game_viewport.w);
@@ -33,7 +33,7 @@ void add_object_velocity(Object *obj, float magnitude)
 /**
  * Checks if a value is off screen, if so, moves it to the opossite edge.
  */
-void wrap(int *pos, int left, int right)
+void wrap(float *pos, int left, int right)
 {
     if (*pos > right) {
         *pos = left;
