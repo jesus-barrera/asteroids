@@ -13,6 +13,5 @@ struct Point {
 };
 
 float uniform(float min, float max);
-void draw_polygon(SDL_Renderer *renderer, Point *points, int points_count);
 
 #endif

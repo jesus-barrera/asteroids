@@ -1,17 +1,15 @@
 #ifndef _ASTEROID_H_INCLUDED_
 #define _ASTEROID_H_INCLUDED_
 
-#include "object.h"
+#include "polygon.h"
 
 #define MIN_RADIUS 0.65
 
 typedef struct Asteroid Asteroid;
 
 struct Asteroid {
-    Object obj;
+    Polygon polygon;
     float radius;
-    int edges;
-    Point *vertices;
 };
 
 Asteroid *new_asteroid(float radius, int edges, int x, int y, float angle, float velocity);
