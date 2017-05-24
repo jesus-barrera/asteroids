@@ -6,6 +6,9 @@ Spaceship *new_spaceship(int x, int y)
 {
     Spaceship *ship = (Spaceship *)malloc(sizeof(Spaceship));
 
+    ship->x_velocity = 0;
+    ship->y_velocity = 0;
+    
     ship->position.x = x;
     ship->position.y = y;
 

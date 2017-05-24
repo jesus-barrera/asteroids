@@ -7,7 +7,7 @@ extern Scene game_scene;
 
 static void enter();
 static void update();
-static void render();
+static void render(SDL_Renderer *renderer);
 static void handleEvent(SDL_Event *event);
 static void render();
 

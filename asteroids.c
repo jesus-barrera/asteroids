@@ -23,36 +23,26 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    Asteroid *asteroid = new_asteroid(50, 18, 200, 200);
-    asteroid->velocity = 5;
-    asteroid->angle = 1;
-
-    Spaceship *ship = new_spaceship(10, 10);
-    ship->x_velocity = 1;
-
-    time_step = 1;
-
     current_scene = &game_scene;
-    quit = SDL_FALSE;
+    current_scene->enter();
 
-    SDL_RenderSetViewport(renderer, &game_viewport);
+    quit = SDL_FALSE;
 
     while (quit == SDL_FALSE) {
         while (SDL_PollEvent(&event)) {
             handleEvent(&event);
         }
 
+        // clear screen
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-
         SDL_RenderClear(renderer);
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
-        draw_asteroid(asteroid, renderer);
-        draw_spaceship(ship, renderer);
+        // render scene
+        current_scene->render(renderer);
         SDL_RenderPresent(renderer);
 
-        move_asteroid(asteroid);
-        move_spaceship(ship);
+        // update scene
+        current_scene->update();
 
         SDL_Delay(10);
     }

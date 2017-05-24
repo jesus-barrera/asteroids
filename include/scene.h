@@ -6,7 +6,7 @@
 struct Scene {
     void (*enter)(void);
     void (*update)(void);
-    void (*render)(void);
+    void (*render)(SDL_Renderer *);
     void (*handleEvent)(SDL_Event *);
 };
 

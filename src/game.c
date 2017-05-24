@@ -3,7 +3,7 @@
 SDL_Rect info_viewport;
 SDL_Rect game_viewport;
 
-float time_step;
+float time_step = 1;
 
 void set_viewports()
 {

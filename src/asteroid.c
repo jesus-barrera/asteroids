@@ -70,7 +70,6 @@ void move_asteroid(Asteroid *asteroid)
     // save asteroid position
     position = asteroid->position;
 
-
     // caculate movement
     distance = asteroid->velocity * time_step;
 
