@@ -3,67 +3,61 @@
 #include "spaceship.h"
 #include "asteroid.h"
 #include "bullet.h"
+#include "list.h"
 
-#define NUM_ASTEROIDS 7
-#define SHIP_VELOCITY_UPDATE 0.05
-#define SHIP_ANGLE_UPDATE 0.05
-
-void handleKeys();
+void handle_keys();
 void shoot();
+void update_bullets();
+void draw_bullets(SDL_Renderer *renderer);
+void update_asteroids();
+void draw_asteroids(SDL_Renderer *renderer);
 
-Scene game_scene = {enter, update, render, handleEvent};
+Scene game_scene = {enter, update, render, handle_event};
 
-Asteroid *asteroids[NUM_ASTEROIDS];
+Node *asteroids;
+Node *bullets;
+
 Spaceship *ship;
-Bullet *bullet;
 
 void enter()
 {
+    Asteroid *asteroid;
     int i;
 
     for (i = 0; i < NUM_ASTEROIDS; i++) {
-        asteroids[i] = new_asteroid(
+        asteroid = new_asteroid(
                 uniform(18, 50), 18,
                 uniform(0, game_viewport.w), uniform(0, game_viewport.h),
                 uniform(0, 2 * PI),
                 uniform(1, 2));
+
+        list_append(&asteroids, (void *)asteroid);
     }
 
     ship = new_spaceship(game_viewport.w / 2, game_viewport.h / 2, -PI / 2, 0);
-
-    bullet = new_bullet(0, 0, 0, 0);
 }
 
 void update()
 {
-    int i;
-
-    for (i = 0; i < NUM_ASTEROIDS; i++) {
-        move_asteroid(asteroids[i]);
-    }
-
     move_spaceship(ship);
-    move_bullet(bullet);
 
-    handleKeys();
+    update_bullets();
+    update_asteroids();
+
+    handle_keys();
 }
 
 void render(SDL_Renderer *renderer)
 {
-    int i;
-
     SDL_RenderSetViewport(renderer, &game_viewport);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
-    for (i = 0; i < NUM_ASTEROIDS; i++) {
-        draw_asteroid(asteroids[i], renderer);
-    }
-
     draw_spaceship(ship, renderer);
-    draw_bullet(bullet, renderer);
+    draw_bullets(renderer);
+    draw_asteroids(renderer);
 }
 
-void handleEvent(SDL_Event *event)
+void handle_event(SDL_Event *event)
 {
     SDL_Keycode key;
 
@@ -76,7 +70,7 @@ void handleEvent(SDL_Event *event)
     }
 }
 
-void handleKeys()
+void handle_keys()
 {
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
 
@@ -91,18 +85,69 @@ void handleKeys()
 
 void shoot()
 {
-    if (! bullet->shot) {
-        float height;
+    float height;
+    Bullet *bullet;
 
-        height = SPACESHIP_HEIGHT / 2.0;
+    bullet = new_bullet(
+        ship->vertices[SHIP_TOP_VERTEX].x,
+        ship->vertices[SHIP_TOP_VERTEX].y,
+        ship->obj.angle,
+        BULLET_VELOCITY);
 
-        // place bullet
-        bullet->obj.position.x = ship->obj.position.x + cos(ship->obj.angle) * height;
-        bullet->obj.position.y = ship->obj.position.y + sin(ship->obj.angle) * height;
-        bullet->obj.angle = ship->obj.angle;
+    list_append(&bullets, (void *)bullet);
+}
 
-        bullet->shot = SDL_TRUE;
+void update_bullets()
+{
+    Node **node_ref;
+    Bullet *bullet;
 
-        set_object_velocity(&bullet->obj, 5);
+    node_ref = &bullets;
+
+    while (*node_ref != NULL) {
+        bullet = (Bullet *)(*node_ref)->data;
+        move_bullet(bullet);
+
+        if (is_off_screen(&bullet->obj)) {
+            delete_bullet(bullet);
+            *node_ref = destroy_node(*node_ref);
+        } else {
+            node_ref = &(*node_ref)->next;
+        }
+    }
+
+}
+
+void draw_bullets(SDL_Renderer *renderer)
+{
+    Node *node = bullets;
+
+    while (node != NULL) {
+        draw_bullet((Bullet *)node->data, renderer);
+        node = node->next;
+    }
+}
+
+void update_asteroids()
+{
+    Node **node_ref;
+    Asteroid *asteroid;
+
+    node_ref = &asteroids;
+
+    while (*node_ref != NULL) {
+        asteroid = (Asteroid *)(*node_ref)->data;
+        move_asteroid(asteroid);
+        node_ref = &(*node_ref)->next;
+    }
+}
+
+void draw_asteroids(SDL_Renderer *renderer)
+{
+    Node *node = asteroids;
+
+    while (node != NULL) {
+        draw_asteroid((Asteroid *)node->data, renderer);
+        node = node->next;
     }
 }

@@ -2,8 +2,6 @@
 #include "spaceship.h"
 #include "game.h"
 
-enum { TOP, BOTTOM_LEFT, BOTTOM_RIGHT, NUM_VERTICES };
-
 void set_spaceship_vertices(Spaceship *ship);
 void set_vertex(Point *vertex, Point *origin, float angle, float magnitude);
 
@@ -13,7 +11,7 @@ Spaceship *new_spaceship(int x, int y, float angle, float velocity)
 
     set_object_props(&ship->obj, x, y, angle, velocity);
 
-    ship->edges = NUM_VERTICES;
+    ship->edges = SHIP_NUM_VERTICES;
     ship->vertices = (Point *)malloc(sizeof(Point) * ship->edges);
 
     set_spaceship_vertices(ship);
@@ -55,14 +53,26 @@ void set_spaceship_vertices(Spaceship *ship)
     base = SPACESHIP_BASE / (float)2;
 
     // top vertex
-    set_vertex(&vertices[TOP], origin, ship->obj.angle, height);
+    set_vertex(
+        &vertices[SHIP_TOP_VERTEX],
+        origin,
+        ship->obj.angle,
+        height);
 
     // base vertices
     hypotenuse = sqrt(pow(height, 2) + pow(base, 2));
     angle = asin(base / height);
 
-    set_vertex(&vertices[BOTTOM_LEFT], origin, ship->obj.angle + PI - angle, hypotenuse);
-    set_vertex(&vertices[BOTTOM_RIGHT], origin, ship->obj.angle + PI + angle, hypotenuse);
+    set_vertex(
+        &vertices[SHIP_BOTTOM_LEFT_VERTEX],
+        origin,
+        ship->obj.angle + PI - angle, hypotenuse);
+
+    set_vertex(
+        &vertices[SHIP_BOTTOM_RIGHT_VERTEX],
+        origin,
+        ship->obj.angle + PI + angle,
+        hypotenuse);
 }
 
 void set_vertex(Point *vertex, Point *origin, float angle, float magnitude)

@@ -3,7 +3,7 @@
 
 #include "object.h"
 
-#define BULLET_LENGTH 5
+#define BULLET_LENGTH 2
 
 typedef struct Bullet Bullet;
 
@@ -11,7 +11,6 @@ struct Bullet
 {
     Object obj;
     Point end;
-    SDL_bool shot;
 };
 
 Bullet *new_bullet(int x, int y, float angle, float velocity);

@@ -6,7 +6,7 @@
 #include "spaceship.h"
 
 SDL_bool init();
-void handleEvent(SDL_Event *event);
+void handle_event(SDL_Event *event);
 void clean();
 
 SDL_Window *window = NULL;
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
     while (quit == SDL_FALSE) {
         while (SDL_PollEvent(&event)) {
-            handleEvent(&event);
+            handle_event(&event);
         }
 
         // clear screen
@@ -92,12 +92,12 @@ SDL_bool init()
 /**
  * Handle SDL envent.
  */
-void handleEvent(SDL_Event *event)
+void handle_event(SDL_Event *event)
 {
     if (event->type == SDL_QUIT) {
         quit = SDL_TRUE;
     } else {
-        current_scene->handleEvent(event);
+        current_scene->handle_event(event);
     }
 }
 

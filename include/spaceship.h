@@ -6,6 +6,13 @@
 #define SPACESHIP_HEIGHT 25
 #define SPACESHIP_BASE 13
 
+
+enum {
+    SHIP_TOP_VERTEX,
+    SHIP_BOTTOM_LEFT_VERTEX,
+    SHIP_BOTTOM_RIGHT_VERTEX,
+    SHIP_NUM_VERTICES };
+
 typedef struct Polygon Spaceship;
 
 Spaceship *new_spaceship(int x, int y, float angle, float velocity);

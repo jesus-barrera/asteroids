@@ -7,7 +7,7 @@ struct Scene {
     void (*enter)(void);
     void (*update)(void);
     void (*render)(SDL_Renderer *);
-    void (*handleEvent)(SDL_Event *);
+    void (*handle_event)(SDL_Event *);
 };
 
 typedef struct Scene Scene;
