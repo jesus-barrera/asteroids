@@ -24,6 +24,7 @@ void enter()
     Asteroid *asteroid;
     int i;
 
+    // create asteroids
     for (i = 0; i < NUM_ASTEROIDS; i++) {
         asteroid = new_asteroid(
                 uniform(18, 50), 18,
@@ -34,13 +35,13 @@ void enter()
         list_append(&asteroids, (void *)asteroid);
     }
 
+    // create a spaceship at the center of the screen pointing up.
     ship = new_spaceship(game_viewport.w / 2, game_viewport.h / 2, -PI / 2, 0);
 }
 
 void update()
 {
     move_spaceship(ship);
-
     update_bullets();
     update_asteroids();
 
@@ -61,7 +62,7 @@ void handle_event(SDL_Event *event)
 {
     SDL_Keycode key;
 
-    if (event->type == SDL_KEYDOWN) {
+    if (event->type == SDL_KEYDOWN && ! event->key.repeat) {
         key = event->key.keysym.sym;
 
         if (key == SDLK_SPACE) {
