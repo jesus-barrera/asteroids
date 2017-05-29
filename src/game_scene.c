@@ -4,10 +4,12 @@
 #include "asteroid.h"
 #include "bullet.h"
 #include "list.h"
+#include "geometry.h"
 
 void handle_keys();
 void shoot();
 void update_bullets();
+SDL_bool check_bullet_collision(Bullet *bullet);
 void draw_bullets(SDL_Renderer *renderer);
 void update_asteroids();
 void draw_asteroids(SDL_Renderer *renderer);
@@ -36,7 +38,7 @@ void enter()
     }
 
     // create a spaceship at the center of the screen pointing up.
-    ship = new_spaceship(game_viewport.w / 2, game_viewport.h / 2, -PI / 2, 0);
+    ship = new_spaceship(game_viewport.w / 2, game_viewport.h / 2, 3 * PI / 2, 0);
 }
 
 void update()
@@ -109,14 +111,43 @@ void update_bullets()
         bullet = (Bullet *)(*node_ref)->data;
         move_bullet(bullet);
 
-        if (is_off_screen(&bullet->obj)) {
+        if (check_bullet_collision(bullet)) {
             delete_bullet(bullet);
             *node_ref = destroy_node(*node_ref);
         } else {
             node_ref = &(*node_ref)->next;
         }
     }
+}
 
+SDL_bool check_bullet_collision(Bullet *bullet)
+{
+    Node **node_ref = &asteroids;
+    Asteroid *asteroid;
+
+    Point bullet_line[2];
+
+    if (is_off_screen(&bullet->obj)) {
+        return SDL_TRUE;
+    }
+
+    bullet_line[0] = bullet->obj.position;
+    bullet_line[1] = bullet->end;
+
+    // check asteroid collision
+    while (*node_ref != NULL) {
+        asteroid = (Asteroid *)(*node_ref)->data;
+
+        if (polygon_intersect_line(&asteroid->polygon, bullet_line)) {
+            *node_ref = destroy_node(*node_ref);
+
+            return SDL_TRUE;
+        } else {
+            node_ref = &(*node_ref)->next;
+        }
+    }
+
+    return SDL_FALSE;
 }
 
 void draw_bullets(SDL_Renderer *renderer)

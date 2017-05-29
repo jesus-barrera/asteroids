@@ -3,7 +3,7 @@
 
 #include "object.h"
 
-#define BULLET_LENGTH 2
+#define BULLET_LENGTH 5
 
 typedef struct Bullet Bullet;
 

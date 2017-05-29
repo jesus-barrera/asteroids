@@ -6,7 +6,7 @@
 #define NUM_ASTEROIDS 7
 #define SHIP_VELOCITY_UPDATE 0.05
 #define SHIP_ANGLE_UPDATE 0.05
-#define BULLET_VELOCITY 5
+#define BULLET_VELOCITY 3
 
 extern Scene game_scene;
 
