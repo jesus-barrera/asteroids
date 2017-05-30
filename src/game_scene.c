@@ -88,7 +88,6 @@ void handle_keys()
 
 void shoot()
 {
-    float height;
     Bullet *bullet;
 
     bullet = new_bullet(
@@ -125,20 +124,21 @@ SDL_bool check_bullet_collision(Bullet *bullet)
     Node **node_ref = &asteroids;
     Asteroid *asteroid;
 
-    Point bullet_line[2];
+    Point bullet_trace[2];
 
+    // check edge collision
     if (is_off_screen(&bullet->obj)) {
         return SDL_TRUE;
     }
 
-    bullet_line[0] = bullet->obj.position;
-    bullet_line[1] = bullet->end;
+    bullet_trace[0] = bullet->prev_position;
+    bullet_trace[1] = bullet->end;
 
     // check asteroid collision
     while (*node_ref != NULL) {
         asteroid = (Asteroid *)(*node_ref)->data;
 
-        if (polygon_intersect_line(&asteroid->polygon, bullet_line)) {
+        if (polygon_intersect_line(&asteroid->polygon, bullet_trace)) {
             *node_ref = destroy_node(*node_ref);
 
             return SDL_TRUE;

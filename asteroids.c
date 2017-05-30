@@ -64,7 +64,7 @@ SDL_bool init()
     }
 
     window = SDL_CreateWindow(
-                "Asteroids Game",
+                "Asteroids",
                 SDL_WINDOWPOS_UNDEFINED,
                 SDL_WINDOWPOS_UNDEFINED,
                 WINDOW_WIDTH, WINDOW_HEIGHT,

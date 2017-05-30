@@ -9,6 +9,9 @@ Bullet *new_bullet(int x, int y, float angle, float velocity)
     set_object_props(&bullet->obj, x, y, angle, velocity);
     set_bullet_end(bullet);
 
+    // initialize prev position as the current position
+    bullet->prev_position = bullet->obj.position;
+
     return bullet;
 }
 
@@ -19,6 +22,10 @@ void delete_bullet(Bullet *bullet)
 
 void move_bullet(Bullet *bullet)
 {
+    // Save bullet position before update to trace the bullet movement. Collision is checked across
+    // this trace instead the bullet itself, preventing it to pass through something without colliding.
+    bullet->prev_position = bullet->obj.position;
+
     update_object_position(&bullet->obj);
     set_bullet_end(bullet);
 }
