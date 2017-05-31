@@ -4,9 +4,11 @@
 #include "scene.h"
 
 #define NUM_ASTEROIDS 7
-#define SHIP_VELOCITY_UPDATE 0.05
-#define SHIP_ANGLE_UPDATE 0.05
-#define BULLET_VELOCITY 5
+
+#define SHIP_MAX_VELOCITY 200 // pixels per second
+#define SHIP_ACCELERATION 200 // pixels per second^2
+#define SHIP_ANGLE_UPDATE PI  // radians per second
+#define BULLET_VELOCITY 200   // pixels per second
 
 extern Scene game_scene;
 

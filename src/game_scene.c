@@ -32,7 +32,7 @@ void enter()
                 uniform(18, 50), 18,
                 uniform(0, game_viewport.w), uniform(0, game_viewport.h),
                 uniform(0, 2 * PI),
-                uniform(1, 2));
+                60);
 
         list_append(&asteroids, (void *)asteroid);
     }
@@ -82,7 +82,7 @@ void handle_keys()
     } else if (keystates[SDL_SCANCODE_RIGHT]) {
         rotate_spaceship(ship, SHIP_ANGLE_UPDATE * time_step);
     } else if (keystates[SDL_SCANCODE_UP]) {
-        add_object_velocity(&ship->obj, SHIP_VELOCITY_UPDATE * time_step);
+        add_object_velocity(&ship->obj, SHIP_ACCELERATION * time_step);
     }
 }
 

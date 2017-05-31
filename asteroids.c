@@ -2,11 +2,11 @@
 
 #include "game.h"
 #include "game_scene.h"
-#include "asteroid.h"
-#include "spaceship.h"
+#include "timer.h"
 
 SDL_bool init();
 void handle_event(SDL_Event *event);
+void render_screen();
 void clean();
 
 SDL_Window *window = NULL;
@@ -18,33 +18,34 @@ Scene *current_scene = NULL;
 int main(int argc, char *argv[])
 {
     SDL_Event event;
+    Timer game_timer;
 
     if (! init()) {
         return 0;
     }
+
+    timer_start(&game_timer);
 
     current_scene = &game_scene;
     current_scene->enter();
 
     quit = SDL_FALSE;
 
-    while (quit == SDL_FALSE) {
+    while (! quit) {
         while (SDL_PollEvent(&event)) {
             handle_event(&event);
         }
 
-        // clear screen
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-        SDL_RenderClear(renderer);
-
-        // render scene
-        current_scene->render(renderer);
-        SDL_RenderPresent(renderer);
+        // get time from last update
+        time_step = timer_get_seconds(&game_timer);
 
         // update scene
         current_scene->update();
 
-        SDL_Delay(10);
+        // restart timer
+        timer_start(&game_timer);
+
+        render_screen();
     }
 
     clean();
@@ -99,6 +100,17 @@ void handle_event(SDL_Event *event)
     } else {
         current_scene->handle_event(event);
     }
+}
+
+void render_screen()
+{
+    // clear screen
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(renderer);
+
+    // render scene
+    current_scene->render(renderer);
+    SDL_RenderPresent(renderer);
 }
 
 void clean()
