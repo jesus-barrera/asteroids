@@ -7,6 +7,7 @@
 #include "geometry.h"
 
 void handle_keys();
+void update_ship_velocity();
 void shoot();
 void update_bullets();
 SDL_bool check_bullet_collision(Bullet *bullet);
@@ -81,9 +82,25 @@ void handle_keys()
         rotate_spaceship(ship, SHIP_ANGLE_UPDATE * time_step * -1);
     } else if (keystates[SDL_SCANCODE_RIGHT]) {
         rotate_spaceship(ship, SHIP_ANGLE_UPDATE * time_step);
-    } else if (keystates[SDL_SCANCODE_UP]) {
-        add_object_velocity(&ship->obj, SHIP_ACCELERATION * time_step);
     }
+
+    if (keystates[SDL_SCANCODE_UP]) {
+        update_ship_velocity();
+    }
+}
+
+/**
+ * Adjust the ship's x and y velocity components, so it eventually reaches a maximum velocity in the
+ * direction it's pointing to.
+ */
+void update_ship_velocity()
+{
+    Point max_vel;
+
+    set_velocity_components(&max_vel, ship->obj.angle, SHIP_MAX_VELOCITY);
+
+    ship->obj.velocity.x += SHIP_ACCELERATION * time_step * (max_vel.x - ship->obj.velocity.x);
+    ship->obj.velocity.y += SHIP_ACCELERATION * time_step * (max_vel.y - ship->obj.velocity.y);
 }
 
 void shoot()

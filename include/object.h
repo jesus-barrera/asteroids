@@ -17,5 +17,6 @@ void move_object(Object *obj);
 void set_object_velocity(Object *obj, float magnitude);
 void add_object_velocity(Object *obj, float magnitude);
 SDL_bool is_off_screen(Object *obj);
+void set_velocity_components(Point *velocity, float angle, float magnitude);
 
 #endif

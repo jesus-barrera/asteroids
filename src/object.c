@@ -3,7 +3,6 @@
 #include "object.h"
 
 void wrap(float *pos, int min, int max);
-void set_velocity_components(Point *velocity, float angle, float magnitude);
 
 void set_object_props(Object *obj, int x, int y, float angle, float velocity)
 {
