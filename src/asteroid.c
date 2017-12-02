@@ -2,7 +2,13 @@
 #include "game.h"
 #include "asteroid.h"
 
-void set_asteroid_vertices(Asteroid *asteroid, int edges);
+/* Fraction of the asteroid's radius to use as the minimun distance between
+ * the asteroid's center and any of its vertices.
+ */
+#define ASTEROID_MIN_RADIUS 0.65
+
+/* Create and place the asteroid's vertices. */
+static void set_asteroid_vertices(Asteroid *asteroid, int edges);
 
 Asteroid *new_asteroid(float radius, int edges, int x, int y, float angle, float velocity)
 {
@@ -50,7 +56,7 @@ void set_asteroid_vertices(Asteroid *asteroid, int edges)
     for (i = 0; i < edges; i++) {
         angle_max = angle_min + angle_step;
 
-        radius = uniform(asteroid->radius * MIN_RADIUS, asteroid->radius);
+        radius = uniform(asteroid->radius * ASTEROID_MIN_RADIUS, asteroid->radius);
         angle = uniform(angle_min, angle_max);
 
         polygon->vertices[i].x = obj->position.x + cos(angle) * radius;
