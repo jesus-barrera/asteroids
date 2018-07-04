@@ -1,4 +1,6 @@
-#include "SDL.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <SDL.h>
 
 #include "game.h"
 #include "game_scene.h"

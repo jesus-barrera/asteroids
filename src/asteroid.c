@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <math.h>
 #include "game.h"
 #include "asteroid.h"

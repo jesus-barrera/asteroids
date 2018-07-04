@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <math.h>
 #include "geometry.h"
 #include "vector.h"
 

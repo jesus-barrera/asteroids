@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <math.h>
 #include "bullet.h"
 
 void set_bullet_end(Bullet *bullet);
