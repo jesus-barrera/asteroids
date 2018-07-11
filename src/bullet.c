@@ -1,47 +1,37 @@
 #include <stdlib.h>
 #include <math.h>
 #include "bullet.h"
+#include "game.h"
 
-void set_bullet_end(Bullet *bullet);
+void bullet_set_points(Bullet *bullet);
 
-Bullet *new_bullet(int x, int y, float angle, float velocity)
+Bullet *bullet_new(int x, int y, float direction, float speed)
 {
-    Bullet *bullet = (Bullet *)malloc(sizeof(Bullet));
+    Bullet *bullet = (Bullet *)object_new(x, y,
+                                          BULLET_LENGTH / 2.0, direction,
+                                          speed, 2);
 
-    set_object_props(&bullet->obj, x, y, angle, velocity);
-    set_bullet_end(bullet);
-
-    // initialize prev position as the current position
-    bullet->prev_position = bullet->obj.position;
+    bullet_set_points(bullet);
 
     return bullet;
 }
 
-void delete_bullet(Bullet *bullet)
+void bullet_move(Bullet *bullet)
 {
-    free(bullet);
+    object_update_position((Object *)bullet);
+    bullet_set_points(bullet);
 }
 
-void move_bullet(Bullet *bullet)
-{
-    // Save bullet position before update to trace the bullet movement. Collision is checked across
-    // this trace instead the bullet itself, preventing it to pass through something without colliding.
-    bullet->prev_position = bullet->obj.position;
-
-    update_object_position(&bullet->obj);
-    set_bullet_end(bullet);
-}
-
-void draw_bullet(Bullet *bullet, SDL_Renderer *renderer)
+void bullet_draw(Bullet *bullet)
 {
     SDL_RenderDrawLine(
         renderer,
-        bullet->obj.position.x, bullet->obj.position.y,
-        bullet->end.x, bullet->end.y);
+        bullet->points[0].x, bullet->points[0].y,
+        bullet->points[1].x, bullet->points[1].y);
 }
 
-void set_bullet_end(Bullet *bullet)
+void bullet_set_points(Bullet *bullet)
 {
-    bullet->end.x = bullet->obj.position.x + cos(bullet->obj.angle) * BULLET_LENGTH;
-    bullet->end.y = bullet->obj.position.y + sin(bullet->obj.angle) * BULLET_LENGTH;
+    object_set_point((Object *)bullet, 0, 0);
+    object_set_point((Object *)bullet, 1, PI);
 }

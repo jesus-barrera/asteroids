@@ -3,81 +3,36 @@
 #include "spaceship.h"
 #include "game.h"
 
-void set_spaceship_vertices(Spaceship *ship);
-void set_vertex(Point *vertex, Point *origin, float angle, float magnitude);
+void spaceship_set_vertices(Spaceship *ship);
 
-Spaceship *new_spaceship(int x, int y, float angle, float velocity)
+Spaceship *spaceship_new(int x, int y, float direction, float speed)
 {
-    Spaceship *ship = (Spaceship *)malloc(sizeof(Spaceship));
+    Spaceship *ship = (Spaceship *)object_new(x, y,
+                                              SPACESHIP_RADIUS, direction,
+                                              speed, SPACESHIP_NUM_VERTICES);
 
-    set_object_props(&ship->obj, x, y, angle, velocity);
-
-    ship->edges = SHIP_NUM_VERTICES;
-    ship->vertices = (Point *)malloc(sizeof(Point) * ship->edges);
-
-    set_spaceship_vertices(ship);
+    spaceship_set_vertices(ship);
 
     return ship;
 }
 
-void delete_spaceship(Spaceship *ship)
+void spaceship_rotate(Spaceship *ship, float angle)
 {
-    free(ship->vertices);
-    free(ship);
+    ship->direction += angle;
+    spaceship_set_vertices(ship);
 }
 
-void move_spaceship(Spaceship *ship)
+void spaceship_set_vertices(Spaceship *ship)
 {
-    move_polygon(ship);
-}
+    object_set_point((Object *)ship,
+                     SPACESHIP_TOP_VERTEX,
+                     0);
 
-void rotate_spaceship(Spaceship *ship, float angle)
-{
-    ship->obj.angle += angle;
-    set_spaceship_vertices(ship);
-}
+    object_set_point((Object *)ship,
+                     SPACESHIP_BOTTOM_LEFT_VERTEX,
+                     SPACESHIP_INTERIOR_ANGLE);
 
-void draw_spaceship(Spaceship *ship, SDL_Renderer *renderer)
-{
-    draw_polygon(ship, renderer);
-}
-
-void set_spaceship_vertices(Spaceship *ship)
-{
-    Point *vertices, *origin;
-    float height, base, hypotenuse, angle, aux_angle;
-
-    vertices = ship->vertices;
-    origin = &ship->obj.position;
-
-    height = SPACESHIP_HEIGHT / (float)2;
-    base = SPACESHIP_BASE / (float)2;
-
-    // top vertex
-    set_vertex(
-        &vertices[SHIP_TOP_VERTEX],
-        origin,
-        ship->obj.angle,
-        height);
-
-    // base vertices
-    hypotenuse = sqrt(pow(height, 2) + pow(base, 2));
-    angle = asin(base / height);
-
-    set_vertex(
-        &vertices[SHIP_BOTTOM_LEFT_VERTEX],
-        origin,
-        ship->obj.angle + PI - angle, hypotenuse);
-
-    set_vertex(
-        &vertices[SHIP_BOTTOM_RIGHT_VERTEX],
-        origin,
-        ship->obj.angle + PI + angle,
-        hypotenuse);
-}
-
-void set_vertex(Point *vertex, Point *origin, float angle, float magnitude)
-{
-    vertex->x = origin->x + cos(angle) * magnitude;
-    vertex->y = origin->y + sin(angle) * magnitude;
+    object_set_point((Object *)ship,
+                     SPACESHIP_BOTTOM_RIGHT_VERTEX,
+                     SPACESHIP_INTERIOR_ANGLE * -1);
 }

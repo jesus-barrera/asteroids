@@ -5,17 +5,12 @@
 
 #define BULLET_LENGTH 2
 
-typedef struct Bullet Bullet;
+#define bullet_delete(bullet) object_delete((Object *)bullet)
 
-struct Bullet
-{
-    Object obj;
-    Point end;
-    Point prev_position;
-};
+typedef struct Object Bullet;
 
-Bullet *new_bullet(int x, int y, float angle, float velocity);
-void delete_bullet(Bullet *bullet);
-void draw_bullet(Bullet *bullet, SDL_Renderer *renderer);
+Bullet *bullet_new(int x, int y, float direction, float speed);
+void bullet_move(Bullet *bullet);
+void bullet_draw(Bullet *bullet);
 
 #endif
