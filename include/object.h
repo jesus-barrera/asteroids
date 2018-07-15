@@ -19,6 +19,8 @@ Object *object_new(int x, int y, float radius, float direction, float speed, int
 void object_delete(Object *obj);
 void object_move(Object *obj);
 void object_update_position(Object *obj);
+SDL_bool object_check_collision(Object *a, Object *b);
+SDL_bool object_intersect_line(Object *a, Point p1, Point p2);
 void object_draw(Object *obj);
 void object_set_point(Object *obj, int point, float angle);
 void set_velocity(Point *velocity, float direction, float speed);

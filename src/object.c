@@ -40,9 +40,11 @@ void object_move(Object *obj)
     wrap(&(obj->position.x), 0, game_viewport.w);
     wrap(&(obj->position.y), 0, game_viewport.h);
 
+    // calculate object displecement from last position
     offset.x = obj->position.x - position.x;
     offset.y = obj->position.y - position.y;
 
+    // apply displacement to the object's points
     for (i = 0; i < obj->num_points; i++) {
         obj->points[i].x += offset.x;
         obj->points[i].y += offset.y;
@@ -55,17 +57,78 @@ void object_update_position(Object *obj)
     obj->position.y += obj->velocity.y * time_step;
 }
 
+SDL_bool object_check_collision(Object *a, Object *b)
+{
+    // calculate the euclidean distance between the objects
+    float distance = sqrt(
+                        pow(b->position.x - a->position.x, 2) +
+                        pow(b->position.y - a->position.y, 2));
+
+    // test if the object's circumscribed circles overlap, if not, then they aren't
+    // close enough to collide.
+    if (distance > (a->radius + b->radius)) {
+        return SDL_FALSE;
+    }
+
+    // check collision by testing if any edge of one object intersects any edge
+    // of the other object.
+
+    int i, j, count;
+    Point p1, p2;
+
+    // handle single line objects
+    count = (a->num_points == 2) ? 1 : a->num_points;
+
+    for (i = 0; i < count; i++) {
+        // get next point index
+        j = (i + 1) % a->num_points;
+
+        p1 = a->points[i];
+        p2 = a->points[j];
+
+        if (object_intersect_line(b, p1, p2)) {
+            return SDL_TRUE;
+        }
+    }
+
+    return SDL_FALSE;
+}
+
+SDL_bool object_intersect_line(Object *obj, Point p1, Point p2)
+{
+    int i, j, count;
+    Point q1, q2;
+
+    count = (obj->num_points == 2) ? 1 : obj->num_points;
+
+    for (i = 0; i < count; i++) {
+        j = (i + 1) % obj->num_points;
+
+        q1 = obj->points[i];
+        q2 = obj->points[j];
+
+        if (lines_intersect(p1, p2, q1, q2)) {
+            return SDL_TRUE;
+        }
+    }
+
+    return SDL_FALSE;
+}
+
 void object_draw(Object *obj)
 {
-    int from, next, last;
+    int i, j, count;
+    Point q1, q2;
 
-    for (from = 0, last = obj->num_points; from < last; from++) {
-        next = (from + 1) % last;
+    count = (obj->num_points == 2) ? 1 : obj->num_points;
+
+    for (i = 0; i < count; i++) {
+        j = (i + 1) % obj->num_points;
 
         SDL_RenderDrawLine(
             renderer,
-            obj->points[from].x, obj->points[from].y,
-            obj->points[next].x, obj->points[next].y);
+            obj->points[i].x, obj->points[i].y,
+            obj->points[j].x, obj->points[j].y);
     }
 }
 

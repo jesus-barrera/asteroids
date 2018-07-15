@@ -9,7 +9,7 @@
  * When two line segments intersect, these form the diagonals of a convex quadrilateral. The sum of
  * the interior angles of a quadrilateral is always 360 degrees (2pi radians).
  */
-int lines_intersect(Point line1[], Point line2[])
+int lines_intersect(Point p1, Point p2, Point q1, Point q2)
 {
     // direction vectors
     double dir_vector_prev[2];
@@ -24,10 +24,10 @@ int lines_intersect(Point line1[], Point line2[])
     // quadrilateral vertices
     Point vertices[4];
 
-    vertices[0] = line1[0];
-    vertices[1] = line2[0];
-    vertices[2] = line1[1];
-    vertices[3] = line2[1];
+    vertices[0] = p1;
+    vertices[1] = q1;
+    vertices[2] = p2;
+    vertices[3] = q2;
 
     // sum quadrilateral interior angles
     for (curr = 0, sum = 0; curr < 4; curr++) {

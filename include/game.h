@@ -8,6 +8,7 @@
 
 extern SDL_Rect info_viewport;
 extern SDL_Rect game_viewport;
+extern SDL_Renderer *renderer;
 
 extern float time_step;
 

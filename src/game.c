@@ -5,6 +5,8 @@ SDL_Rect game_viewport;
 
 float time_step = 1;
 
+SDL_Renderer *renderer = NULL;
+
 void set_viewports()
 {
     info_viewport.x = 0;
