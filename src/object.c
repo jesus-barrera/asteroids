@@ -57,6 +57,23 @@ void object_update_position(Object *obj)
     obj->position.y += obj->velocity.y * time_step;
 }
 
+void object_rotate(Object *obj, float radians)
+{
+    float x, y;
+    int i;
+
+    // calculate new points positions
+    for (i = 0; i < obj->num_points; i++) {
+        x = obj->points[i].x - obj->position.x;
+        y = obj->points[i].y - obj->position.y;
+
+        obj->points[i].x = x * cos(radians) - y * sin(radians) + obj->position.x;
+        obj->points[i].y = y * cos(radians) + x * sin(radians) + obj->position.y;
+    }
+
+    obj->direction += radians;
+}
+
 SDL_bool object_check_collision(Object *a, Object *b)
 {
     // calculate the euclidean distance between the objects

@@ -19,6 +19,5 @@ enum {
 typedef struct Object Spaceship;
 
 Spaceship *spaceship_new(int x, int y, float direction, float speed);
-void spaceship_rotate(Spaceship *ship, float angle);
 
 #endif

@@ -16,12 +16,6 @@ Spaceship *spaceship_new(int x, int y, float direction, float speed)
     return ship;
 }
 
-void spaceship_rotate(Spaceship *ship, float angle)
-{
-    ship->direction += angle;
-    spaceship_set_vertices(ship);
-}
-
 void spaceship_set_vertices(Spaceship *ship)
 {
     object_set_point((Object *)ship,
