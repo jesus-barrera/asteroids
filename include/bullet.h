@@ -5,6 +5,7 @@
 
 #define BULLET_LENGTH 2
 
+#define bullet_update(bullet) object_update((Object *)bullet)
 #define bullet_delete(bullet) object_delete((Object *)bullet)
 #define bullet_draw(bullet) object_draw((Object *)bullet)
 

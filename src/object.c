@@ -13,10 +13,12 @@ Object *object_new(int x, int y, float radius, float direction, float speed, int
     obj->position.y = y;
     obj->radius = radius;
     obj->direction = direction;
+    obj->angular_speed = 0;
+    obj->wrap = SDL_TRUE;
     obj->num_points = num_points;
     obj->points = (Point *)malloc(sizeof(Point) * num_points);
 
-    set_velocity(&obj->velocity, direction, speed);
+    vector_get_components(direction, speed, &obj->velocity);
 
     return obj;
 }
@@ -27,34 +29,42 @@ void object_delete(Object *obj)
     free(obj);
 }
 
-void object_move(Object *obj)
+void object_update(Object *obj)
 {
-    int i;
-    Point offset;
-    Point position;
+    Point displacement;
+    float rotation;
 
-    position = obj->position;
+    // calculate rotation
+    rotation = obj->angular_speed * time_step;
 
-    object_update_position(obj);
+    // calculate position displacement
+    vector_mult_by_scalar(&obj->velocity, time_step, &displacement);
 
-    wrap(&(obj->position.x), 0, game_viewport.w);
-    wrap(&(obj->position.y), 0, game_viewport.h);
+    if (obj->wrap) {
+        Point new_position;
 
-    // calculate object displecement from last position
-    offset.x = obj->position.x - position.x;
-    offset.y = obj->position.y - position.y;
+        vector_add(&obj->position, &displacement, &new_position);
 
-    // apply displacement to the object's points
-    for (i = 0; i < obj->num_points; i++) {
-        obj->points[i].x += offset.x;
-        obj->points[i].y += offset.y;
+        wrap(&new_position.x, 0, game_viewport.w);
+        wrap(&new_position.y, 0, game_viewport.h);
+
+        vector_diff(&new_position, &obj->position, &displacement);
     }
+
+    // update object
+    object_move(obj, &displacement);
+    object_rotate(obj, rotation);
 }
 
-void object_update_position(Object *obj)
+void object_move(Object *obj, Point *displacement)
 {
-    obj->position.x += obj->velocity.x * time_step;
-    obj->position.y += obj->velocity.y * time_step;
+    int i;
+
+    vector_add(&obj->position, displacement, &obj->position);
+
+    for (i = 0; i < obj->num_points; i++) {
+        vector_add(&obj->points[i], displacement, &obj->points[i]);
+    }
 }
 
 void object_rotate(Object *obj, float radians)
@@ -163,12 +173,6 @@ SDL_bool object_is_off_screen(Object *obj)
             obj->position.y < 0 || obj->position.y > game_viewport.h);
 }
 
-void set_velocity(Point *velocity, float direction, float speed)
-{
-    velocity->x = cos(direction) * speed;
-    velocity->y = sin(direction) * speed;
-}
-
 void wrap(float *pos, int min, int max)
 {
     if (*pos > max) {
@@ -176,4 +180,28 @@ void wrap(float *pos, int min, int max)
     } else if (*pos < min) {
         *pos = max;
     }
+}
+
+void vector_get_components(float direction, float magnitude, Point *result)
+{
+    result->x = cos(direction) * magnitude;
+    result->y = sin(direction) * magnitude;
+}
+
+void vector_add(Point *v, Point *u, Point *result)
+{
+    result->x = v->x + u->x;
+    result->y = v->y + u->y;
+}
+
+void vector_diff(Point *v, Point *u, Point *result)
+{
+    result->x = v->x - u->x;
+    result->y = v->y - u->y;
+}
+
+void vector_mult_by_scalar(Point *v, float scalar, Point *result)
+{
+    result->x = v->x * scalar;
+    result->y = v->y * scalar;
 }

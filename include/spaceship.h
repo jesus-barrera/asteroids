@@ -6,7 +6,7 @@
 #define SPACESHIP_RADIUS 15
 #define SPACESHIP_INTERIOR_ANGLE 2.5 // between pi/2 and pi
 
-#define spaceship_move(spaceship) object_move((Object *)spaceship)
+#define spaceship_update(spaceship) object_update((Object *)spaceship)
 #define spaceship_draw(spaceship) object_draw((Object *)spaceship)
 #define spaceship_delete(spaceship) object_delete((Object *)spaceship)
 

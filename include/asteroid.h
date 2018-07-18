@@ -11,7 +11,7 @@
 
 #include "object.h"
 
-#define asteroid_move(asteroid) object_move((Object *)asteroid)
+#define asteroid_update(asteroid) object_update((Object *)asteroid)
 #define asteroid_draw(asteroid) object_draw((Object *)asteroid)
 #define asteroid_delete(asteroid) object_delete((Object *)asteroid)
 
