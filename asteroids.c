@@ -12,7 +12,6 @@ void render_screen();
 void clean();
 
 SDL_Window *window = NULL;
-SDL_Renderer *renderer = NULL;
 SDL_bool quit;
 
 Scene *current_scene = NULL;

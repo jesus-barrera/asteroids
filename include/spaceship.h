@@ -3,7 +3,7 @@
 
 #include "object.h"
 
-#define SPACESHIP_RADIUS 15
+#define SPACESHIP_RADIUS 10
 #define SPACESHIP_INTERIOR_ANGLE 2.5 // between pi/2 and pi
 
 #define spaceship_update(spaceship) object_update((Object *)spaceship)
