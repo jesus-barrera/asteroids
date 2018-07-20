@@ -18,6 +18,12 @@
 typedef struct Object Asteroid;
 
 /**
+ * Fraction of the asteroid's radius to use as the minimun distance between
+ * the asteroid's center and any of its vertices.
+ */
+#define ASTEROID_MIN_RADIUS 0.65
+
+/**
  * Create a new asteroid.
  *
  * The vertices are placed randomly around the center (x and y postions) in such

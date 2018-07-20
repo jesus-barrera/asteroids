@@ -6,19 +6,34 @@
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
-#define SPACESHIP_MAX_SPEED 300        // pixels per second
-#define SPACESHIP_ACCELERATION 0.9     // (?)
-#define SPACESHIP_DECELERATION 0.3     // (?)
-#define SPACESHIP_ANGULAR_VELOCITY PI  // radians per second
+#define SPACESHIP_MAX_SPEED         300
+#define SPACESHIP_ACCELERATION      0.9
+#define SPACESHIP_DECELERATION      0.3
+#define SPACESHIP_ANGULAR_VELOCITY  PI
 
-#define BULLET_SPEED 400               // pixels per second
+#define BULLET_SPEED 400
 
-extern SDL_Rect info_viewport;
-extern SDL_Rect game_viewport;
+#define ASTEROID_LARGE      40
+#define ASTEROID_MEDIUM     20
+#define ASTEROID_SMALL      10
+#define ASTEROID_MIN_SPEED  20
+#define ASTEROID_MAX_SPEED  60
+#define ASTEROID_FRAGMENTS  2
+
+#define LEVEL_INITIAL_ASTEROIDS 4
+#define LEVEL_ASTEROID_INCREMENT 2
+
+#define PLAYER_INITIAL_LIVES        3
+#define PLAYER_RESPAWNING_TIME      3
+#define PLAYER_INVINCIBILITY_TIME   3
+
+typedef enum {
+    GAME_STATE_PLAYING,
+    GAME_STATE_END_OF_LEVEL,
+    GAME_STATE_OVER
+} Game_State;
+
 extern SDL_Renderer *renderer;
-
 extern float time_step;
-
-void set_viewports();
 
 #endif

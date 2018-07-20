@@ -5,7 +5,7 @@
 
 static void wrap(float *pos, int min, int max);
 
-Object *object_new(int x, int y, float radius, float direction, float speed, int num_points)
+Object *object_new(int x, int y, int radius, float direction, float speed, int num_points)
 {
     Object *obj = (Object *)malloc(sizeof(Object));
 
@@ -18,7 +18,7 @@ Object *object_new(int x, int y, float radius, float direction, float speed, int
     obj->num_points = num_points;
     obj->points = (Point *)malloc(sizeof(Point) * num_points);
 
-    vector_get_components(direction, speed, &obj->velocity);
+    vector_set_components(direction, speed, &obj->velocity);
 
     return obj;
 }
@@ -45,8 +45,8 @@ void object_update(Object *obj)
 
         vector_add(&obj->position, &displacement, &new_position);
 
-        wrap(&new_position.x, 0, game_viewport.w);
-        wrap(&new_position.y, 0, game_viewport.h);
+        wrap(&new_position.x, 0, WINDOW_WIDTH);
+        wrap(&new_position.y, 0, WINDOW_HEIGHT);
 
         vector_diff(&new_position, &obj->position, &displacement);
     }
@@ -159,6 +159,11 @@ void object_draw(Object *obj)
     }
 }
 
+void object_set_velocity(Object *obj, float speed)
+{
+
+}
+
 void object_set_point(Object *obj, int point, float angle)
 {
     angle += obj->direction;
@@ -169,8 +174,8 @@ void object_set_point(Object *obj, int point, float angle)
 
 SDL_bool object_is_off_screen(Object *obj)
 {
-    return (obj->position.x < 0 || obj->position.x > game_viewport.w ||
-            obj->position.y < 0 || obj->position.y > game_viewport.h);
+    return (obj->position.x < 0 || obj->position.x > WINDOW_WIDTH ||
+            obj->position.y < 0 || obj->position.y > WINDOW_HEIGHT);
 }
 
 void wrap(float *pos, int min, int max)
@@ -182,7 +187,7 @@ void wrap(float *pos, int min, int max)
     }
 }
 
-void vector_get_components(float direction, float magnitude, Point *result)
+void vector_set_components(float direction, float magnitude, Point *result)
 {
     result->x = cos(direction) * magnitude;
     result->y = sin(direction) * magnitude;

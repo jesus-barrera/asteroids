@@ -3,11 +3,6 @@
 #include "game.h"
 #include "asteroid.h"
 
-/* Fraction of the asteroid's radius to use as the minimun distance between
- * the asteroid's center and any of its vertices.
- */
-#define ASTEROID_MIN_RADIUS 0.65
-
 static void asteroid_set_vertices(Asteroid *asteroid);
 
 Asteroid *asteroid_new(int x, int y, float radius, float direction, float speed, int num_points)
