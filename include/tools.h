@@ -13,5 +13,6 @@ struct Point {
 };
 
 float uniform(float min, float max);
+int randint(int min, int max);
 
 #endif

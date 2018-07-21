@@ -19,6 +19,6 @@ Bullet *bullet_new(int x, int y, float direction, float speed)
 
 void bullet_set_points(Bullet *bullet)
 {
-    object_set_point((Object *)bullet, 0, 0);
-    object_set_point((Object *)bullet, 1, PI);
+    object_set_point((Object *)bullet, BULLET_HEAD, 0);
+    object_set_point((Object *)bullet, BULLET_TAIL, PI);
 }

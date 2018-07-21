@@ -10,8 +10,7 @@
 #define spaceship_draw(spaceship) object_draw((Object *)spaceship)
 #define spaceship_delete(spaceship) object_delete((Object *)spaceship)
 
-typedef enum
-{
+typedef enum {
     SPACESHIP_TOP_VERTEX,
     SPACESHIP_BOTTOM_LEFT_VERTEX,
     SPACESHIP_BOTTOM_RIGHT_VERTEX,

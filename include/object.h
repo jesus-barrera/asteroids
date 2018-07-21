@@ -27,6 +27,7 @@ SDL_bool object_intersect_line(Object *a, Point p1, Point p2);
 void object_draw(Object *obj);
 void object_set_point(Object *obj, int point, float angle);
 SDL_bool object_is_off_screen(Object *obj);
+void object_reset(Object *obj, int x, int y, float direction, float speed);
 
 void vector_set_components(float direction, float magnitude, Point *result);
 void vector_add(Point *v, Point *u, Point *result);

@@ -3,12 +3,11 @@
 #include <SDL.h>
 
 #include "game.h"
-#include "game_scene.h"
 #include "timer.h"
 
 SDL_bool init();
 void handle_event(SDL_Event *event);
-void render_screen();
+void render();
 void clean();
 
 SDL_Window *window = NULL;
@@ -27,7 +26,7 @@ int main(int argc, char *argv[])
 
     timer_start(&game_timer);
 
-    current_scene = &game_scene;
+    current_scene = &game;
     current_scene->enter();
 
     quit = SDL_FALSE;
@@ -46,7 +45,7 @@ int main(int argc, char *argv[])
         // restart timer
         timer_start(&game_timer);
 
-        render_screen();
+        render();
     }
 
     clean();
@@ -86,7 +85,6 @@ SDL_bool init()
 
     // game things
     srand(time(NULL)); // initialize rand module
-    set_viewports();
 
     return SDL_TRUE;
 }
@@ -103,14 +101,14 @@ void handle_event(SDL_Event *event)
     }
 }
 
-void render_screen()
+void render()
 {
     // clear screen
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
     // render scene
-    current_scene->render(renderer);
+    current_scene->render();
     SDL_RenderPresent(renderer);
 }
 

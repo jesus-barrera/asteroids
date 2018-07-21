@@ -159,11 +159,6 @@ void object_draw(Object *obj)
     }
 }
 
-void object_set_velocity(Object *obj, float speed)
-{
-
-}
-
 void object_set_point(Object *obj, int point, float angle)
 {
     angle += obj->direction;
@@ -177,6 +172,26 @@ SDL_bool object_is_off_screen(Object *obj)
     return (obj->position.x < 0 || obj->position.x > WINDOW_WIDTH ||
             obj->position.y < 0 || obj->position.y > WINDOW_HEIGHT);
 }
+
+void object_reset(Object *obj, int x, int y, float direction, float speed)
+{
+    Point displacement;
+    float rotation;
+
+    // calculate object displacement from current position.
+    displacement.x = x - obj->position.x;
+    displacement.y = y - obj->position.y;
+
+    // calculate object rotation
+    rotation = direction - obj->direction;
+
+    // apply displacement and rotation
+    object_move(obj, &displacement);
+    object_rotate(obj, rotation);
+
+    // set velocity
+    vector_set_components(obj->direction, speed, &obj->velocity);
+};
 
 void wrap(float *pos, int min, int max)
 {
