@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <SDL_mixer.h>
 #include "game.h"
 #include "spaceship.h"
 #include "asteroid.h"
@@ -9,6 +11,7 @@ static void enter();
 static void update();
 static void render();
 static void handle_event(SDL_Event *event);
+void load_media();
 void handle_keys();
 void next_level();
 void add_asteroid();
@@ -21,14 +24,29 @@ void asteroid_destroy(Asteroid *asteroid);
 void objects_update(Node *node);
 void objects_draw(Node *node);
 
-Scene game = {enter, update, render, handle_event};
-Node *asteroids;
+SDL_Renderer *renderer;
 
+// Sound effects
+enum {
+    SFX_FIRE,
+    SFX_EXPLOSION_LARGE,
+    SFX_EXPLOSION_MEDIUM,
+    SFX_EXPLOSION_SMALL,
+    SFX_THRUST,
+    SFX_COUNT
+};
+
+#define SFX_THRUST_CHANNEL 0
+
+Mix_Chunk *sounds[SFX_COUNT];
+
+Scene game = {enter, update, render, handle_event};
+
+Node *asteroids;
 Node *bullets;
 Node *parts;
 Spaceship *ship;
 
-SDL_Renderer *renderer;
 Timer spaceship_timer;
 float time_step;
 int spaceship_state;
@@ -38,6 +56,12 @@ int level;
 void enter()
 {
     int i;
+
+    load_media();
+
+    // Reserve channel for trust sound
+    Mix_PlayChannel(SFX_THRUST_CHANNEL, sounds[SFX_THRUST], -1);
+    Mix_Pause(SFX_THRUST_CHANNEL);
 
     level = 0;
     lives = GAME_INITIAL_LIVES;
@@ -120,6 +144,15 @@ void handle_event(SDL_Event *event)
     }
 }
 
+void load_media() {
+    // Load sounds
+    sounds[SFX_FIRE] = Mix_LoadWAV("media/sound/fire.wav");
+    sounds[SFX_EXPLOSION_LARGE] = Mix_LoadWAV("media/sound/bangLarge.wav");
+    sounds[SFX_EXPLOSION_MEDIUM] = Mix_LoadWAV("media/sound/bangMedium.wav");
+    sounds[SFX_EXPLOSION_SMALL] = Mix_LoadWAV("media/sound/bangSmall.wav");
+    sounds[SFX_THRUST] = Mix_LoadWAV("media/sound/thrust.wav");
+}
+
 void handle_keys()
 {
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
@@ -143,8 +176,10 @@ void handle_keys()
 
     if (keystates[SDL_SCANCODE_UP]) {
         spaceship_update_velocity(SPACESHIP_MAX_SPEED, SPACESHIP_ACCELERATION);
+        Mix_Resume(SFX_THRUST_CHANNEL);
     } else {
         spaceship_update_velocity(0, SPACESHIP_DECELERATION);
+        Mix_Pause(SFX_THRUST_CHANNEL);
     }
 }
 
@@ -247,6 +282,8 @@ void shoot()
         BULLET_SPEED);
 
     list_append(&bullets, (void *)bullet);
+
+    Mix_PlayChannel(-1, sounds[SFX_FIRE], 0);
 }
 
 void spaceship_update_velocity(float target_speed, float acceleration)
@@ -289,6 +326,9 @@ void spaceship_destroy()
         part->angular_speed = uniform(-2 * PI, 2 * PI);
     }
 
+    Mix_Pause(SFX_THRUST_CHANNEL);
+    Mix_PlayChannel(-1, sounds[SFX_EXPLOSION_MEDIUM], 0);
+
     lives -= 1;
 
     spaceship_state = SPACESHIP_STATE_DESTROYED;
@@ -296,7 +336,6 @@ void spaceship_destroy()
     // Start respawning timer.
     timer_start(&spaceship_timer);
 }
-
 
 SDL_bool bullet_handle_collision(Bullet *bullet, Point *tail)
 {
@@ -335,30 +374,37 @@ SDL_bool bullet_handle_collision(Bullet *bullet, Point *tail)
 
 void asteroid_destroy(Asteroid *asteroid)
 {
-    int i, radius;
+    int i, radius, effect, fragments;
 
     // When an asteroid is destroyed, we create smaller asteroids (fragments)
     // from it. These smaller asteroids move faster and point in a similar
     // direction.
 
+    fragments = ASTEROID_FRAGMENTS;
+
     if (asteroid->radius == ASTEROID_LARGE) {
+        effect = SFX_EXPLOSION_LARGE;
         radius = ASTEROID_MEDIUM;
     } else if (asteroid->radius == ASTEROID_MEDIUM) {
+        effect = SFX_EXPLOSION_MEDIUM;
         radius = ASTEROID_SMALL;
     } else {
-        return;
+        effect = SFX_EXPLOSION_SMALL;
+        fragments = 0;
     }
 
-    for (i = 0; i < ASTEROID_FRAGMENTS; i++) {
+    for (i = 0; i < fragments; i++) {
         asteroid = asteroid_new(
                 asteroid->position.x, asteroid->position.y,
                 radius,
                 asteroid->direction + uniform(-PI/2, PI/2),
-                (ASTEROID_SPEED - radius) * 2,
+                (ASTEROID_SPEED - radius) * 3,
                 uniform(ASTEROID_MIN_SIDES, ASTEROID_MAX_SIDES));
 
         list_append(&asteroids, (void *)asteroid);
     }
+
+    Mix_PlayChannel(-1, sounds[effect], 0);
 }
 
 void objects_update(Node *node)

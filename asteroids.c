@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
+#include <SDL_mixer.h>
 
 #include "game.h"
 #include "timer.h"
@@ -59,8 +60,17 @@ int main(int argc, char *argv[])
  */
 SDL_bool init()
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("Couldn't initialize SDL video: %s \n", SDL_GetError());
+    // Initialize SDL
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+        printf("Couldn't initialize SDL: %s \n", SDL_GetError());
+        return SDL_FALSE;
+    }
+
+    // Initialize SDL_mixer: 22.05KHz, system byte order, stereo audio, using
+    // 1024 byte chunks.
+    if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) < 0 ) {
+        printf("Couldn't initialize SDL_mixer: %s\n", Mix_GetError());
+
         return SDL_FALSE;
     }
 
@@ -117,5 +127,6 @@ void clean()
     SDL_DestroyWindow(window);
     window = NULL;
 
+    Mix_Quit();
     SDL_Quit();
 }
