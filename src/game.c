@@ -47,7 +47,8 @@ Node *bullets;
 Node *parts;
 Spaceship *ship;
 
-Timer spaceship_timer;
+Timer spaceship_timer, flickering_timer;
+SDL_bool draw_flame;
 float time_step;
 int spaceship_state;
 int lives;
@@ -66,6 +67,8 @@ void enter()
     level = 0;
     lives = GAME_INITIAL_LIVES;
 
+    spaceship_state = SPACESHIP_STATE_OK;
+
     // Create the spaceship
     ship = spaceship_new(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, -PI/2, 0);
 
@@ -80,7 +83,7 @@ void enter()
 
 void update()
 {
-    if (spaceship_state == SPACESHIP_STATE_DESTROYED) {
+    if (spaceship_state & SPACESHIP_STATE_DESTROYED) {
         objects_update(parts);
 
         // When destroyed, the spaceship is restored after a given time (respawning).
@@ -95,7 +98,7 @@ void update()
             // After respawning, the spaceship is set into invincible mode for a
             // brief moment. The timer is restarted so we know how much time the
             // spaceship has been in this state.
-            spaceship_state = SPACESHIP_STATE_INVINCIBLE;
+            spaceship_state = SPACESHIP_STATE_INVINCIBLE | SPACESHIP_STATE_OK;
             timer_start(&spaceship_timer);
         }
     } else {
@@ -103,10 +106,21 @@ void update()
 
         // The spaceship invincivility should be removed after the given amount
         // of time.
-        if (spaceship_state == SPACESHIP_STATE_INVINCIBLE &&
+        if ((spaceship_state & SPACESHIP_STATE_INVINCIBLE) &&
             timer_get_seconds(&spaceship_timer) >= GAME_INVINCIBILITY_TIME) {
 
-            spaceship_state = SPACESHIP_STATE_OK;
+            spaceship_state ^= SPACESHIP_STATE_INVINCIBLE;
+        }
+
+        if (spaceship_state & SPACESHIP_STATE_THRUST) {
+            if (timer_get_seconds(&flickering_timer) >=
+                SPACESHIP_FLAME_FLICKERING_TIME) {
+
+                draw_flame = ! draw_flame;
+                timer_start(&flickering_timer);
+            }
+        } else {
+            draw_flame = SDL_FALSE;
         }
     }
 
@@ -120,10 +134,10 @@ void render(SDL_Renderer *renderer)
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
-    if (spaceship_state == SPACESHIP_STATE_DESTROYED) {
+    if (spaceship_state & SPACESHIP_STATE_DESTROYED) {
         objects_draw(parts);
     } else {
-        spaceship_draw(ship);
+        spaceship_draw(ship, draw_flame);
     }
 
     objects_draw(bullets);
@@ -138,8 +152,11 @@ void handle_event(SDL_Event *event)
     if (event->type == SDL_KEYDOWN && ! event->key.repeat) {
         key = event->key.keysym.sym;
 
-        if (key == SDLK_SPACE && spaceship_state != SPACESHIP_STATE_DESTROYED) {
-            shoot();
+        // Handle Spaceship controls
+        if (spaceship_state & SPACESHIP_STATE_OK) {
+            if (key == SDLK_SPACE) {
+                shoot();
+            }
         }
     }
 }
@@ -162,7 +179,7 @@ void handle_keys()
     // velocity. This is not done through the SDL_KEYDOWN event, since we need
     // to continuously apply these controls while the keys are pressed.
 
-    if (spaceship_state == SPACESHIP_STATE_DESTROYED) {
+    if (spaceship_state & SPACESHIP_STATE_DESTROYED) {
         return;
     }
 
@@ -176,10 +193,18 @@ void handle_keys()
 
     if (keystates[SDL_SCANCODE_UP]) {
         spaceship_update_velocity(SPACESHIP_MAX_SPEED, SPACESHIP_ACCELERATION);
-        Mix_Resume(SFX_THRUST_CHANNEL);
+
+        if (! (spaceship_state & SPACESHIP_STATE_THRUST)) {
+            spaceship_state |= SPACESHIP_STATE_THRUST;
+            Mix_Resume(SFX_THRUST_CHANNEL);
+        }
     } else {
         spaceship_update_velocity(0, SPACESHIP_DECELERATION);
-        Mix_Pause(SFX_THRUST_CHANNEL);
+
+        if (spaceship_state & SPACESHIP_STATE_THRUST) {
+            spaceship_state ^= SPACESHIP_STATE_THRUST;
+            Mix_Pause(SFX_THRUST_CHANNEL);
+        }
     }
 }
 
@@ -230,7 +255,8 @@ void handle_collisions()
     Node *node;
 
     // Check collision between spaceship and asteroids.
-    if (spaceship_state == SPACESHIP_STATE_OK) {
+    if (spaceship_state & SPACESHIP_STATE_OK &&
+        !(spaceship_state & SPACESHIP_STATE_INVINCIBLE)) {
         node = asteroids;
 
         while (node != NULL) {
@@ -307,8 +333,8 @@ void spaceship_destroy()
 
     // For each side of the spaceship we create a new object (part) that moves
     // independently, this makes the effect of the spaceship being destroyed.
-    for (i = 0, node = parts; i < ship->num_points; i++, node = node->next) {
-        j = (i + 1) % ship->num_points;
+    for (i = 0, node = parts; i < SPACESHIP_POINTS_COUNT; i++, node = node->next) {
+        j = (i + 1) % SPACESHIP_POINTS_COUNT;
         part = (Object *)node->data;
 
         // Create a line from point i to j.
@@ -374,6 +400,7 @@ SDL_bool bullet_handle_collision(Bullet *bullet, Point *tail)
 
 void asteroid_destroy(Asteroid *asteroid)
 {
+    Asteroid *fragment;
     int i, radius, effect, fragments;
 
     // When an asteroid is destroyed, we create smaller asteroids (fragments)
@@ -394,14 +421,14 @@ void asteroid_destroy(Asteroid *asteroid)
     }
 
     for (i = 0; i < fragments; i++) {
-        asteroid = asteroid_new(
+        fragment = asteroid_new(
                 asteroid->position.x, asteroid->position.y,
                 radius,
-                asteroid->direction + uniform(-PI/2, PI/2),
+                asteroid->direction + uniform(0.8, -0.8),
                 (ASTEROID_SPEED - radius) * 3,
                 uniform(ASTEROID_MIN_SIDES, ASTEROID_MAX_SIDES));
 
-        list_append(&asteroids, (void *)asteroid);
+        list_append(&asteroids, (void *)fragment);
     }
 
     Mix_PlayChannel(-1, sounds[effect], 0);
