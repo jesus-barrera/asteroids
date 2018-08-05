@@ -17,6 +17,7 @@ Object *object_new(int x, int y, int radius, float direction, float speed, int n
     obj->wrap = SDL_TRUE;
     obj->num_points = num_points;
     obj->points = (Point *)malloc(sizeof(Point) * num_points);
+    obj->outline_end = num_points;
 
     vector_set_components(direction, speed, &obj->velocity);
 
@@ -91,7 +92,7 @@ SDL_bool object_check_collision(Object *a, Object *b)
                         pow(b->position.x - a->position.x, 2) +
                         pow(b->position.y - a->position.y, 2));
 
-    // test if the object's circumscribed circles overlap, if not, then they aren't
+    // Test if the object's circumscribed circles overlap, if not, then they aren't
     // close enough to collide.
     if (distance > (a->radius + b->radius)) {
         return SDL_FALSE;
@@ -104,11 +105,11 @@ SDL_bool object_check_collision(Object *a, Object *b)
     Point p1, p2;
 
     // handle single line objects
-    count = (a->num_points == 2) ? 1 : a->num_points;
+    count = (a->outline_end == 2) ? 1 : a->outline_end;
 
     for (i = 0; i < count; i++) {
         // get next point index
-        j = (i + 1) % a->num_points;
+        j = (i + 1) % a->outline_end;
 
         p1 = a->points[i];
         p2 = a->points[j];
@@ -145,17 +146,32 @@ SDL_bool object_intersect_line(Object *obj, Point p1, Point p2)
 void object_draw(Object *obj)
 {
     int i, j, count;
-    Point q1, q2;
 
-    count = (obj->num_points == 2) ? 1 : obj->num_points;
+    count = (obj->outline_end == 2) ? 1 : obj->outline_end;
 
     for (i = 0; i < count; i++) {
-        j = (i + 1) % obj->num_points;
+        j = (i + 1) % obj->outline_end;
 
         SDL_RenderDrawLine(
             renderer,
             obj->points[i].x, obj->points[i].y,
             obj->points[j].x, obj->points[j].y);
+    }
+}
+
+void object_draw_lines(Object *obj, int *points)
+{
+    int i;
+    int p1, p2;
+
+    for (i = 0; points[i] != -1; i += 2) {
+        p1 = points[i];
+        p2 = points[i + 1];
+
+        SDL_RenderDrawLine(
+            renderer,
+            obj->points[p1].x, obj->points[p1].y,
+            obj->points[p2].x, obj->points[p2].y);
     }
 }
 

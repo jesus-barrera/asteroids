@@ -15,6 +15,7 @@ typedef struct Object {
     SDL_bool wrap;
     Point *points;
     int num_points;
+    int outline_end;
 } Object;
 
 Object *object_new(int x, int y, int radius, float direction, float speed, int num_points);
@@ -25,6 +26,7 @@ void object_rotate(Object *obj, float radians);
 SDL_bool object_check_collision(Object *a, Object *b);
 SDL_bool object_intersect_line(Object *a, Point p1, Point p2);
 void object_draw(Object *obj);
+void object_draw_lines(Object *obj, int *points);
 void object_set_point(Object *obj, int point, float angle);
 SDL_bool object_is_off_screen(Object *obj);
 void object_reset(Object *obj, int x, int y, float direction, float speed);

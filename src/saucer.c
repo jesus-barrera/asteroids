@@ -9,44 +9,44 @@
  * saucer is symmetrical, only four of the eight vertices are defined here; the
  * other four are obtained by reflecting these points over the y axis.
  */
-Point vertices[] = {
+static Point points[] = {
     {0.38, 0.4},
     {1, 0},
     {0.38, -0.3},
     {0.28, -0.6},
 };
 
-static void saucer_set_vertices(Saucer *saucer);
-static void saucer_draw_join(Saucer *saucer, int i);
+static int inside_lines[] = {
+    1, 6,
+    2, 5,
+    -1
+};
+
+static void saucer_set_points(Saucer *saucer);
 
 Saucer *saucer_new(int x, int y, float radius, float direction, float speed)
 {
     Saucer *saucer = (Saucer *)object_new(x, y, radius, direction,
                                           speed, SAUCER_VERTICES_COUNT);
 
-    saucer_set_vertices(saucer);
+    saucer_set_points(saucer);
 
     return saucer;
 }
 
 void saucer_draw(Saucer *saucer)
 {
-    int i, j;
-
     object_draw((Object *)saucer);
-
-    // Draw aditional lines; these lines join two opposite vertices.
-    saucer_draw_join(saucer, 1);
-    saucer_draw_join(saucer, 2);
+    object_draw_lines((Object *)saucer, inside_lines);
 }
 
-void saucer_set_vertices(Saucer *saucer)
+void saucer_set_points(Saucer *saucer)
 {
     int i, j, k;
 
     for (i = 0, j = SAUCER_VERTICES_COUNT / 2; i < j; i++) {
         // Calculate vertex position from the center.
-        vector_mult_by_scalar(&vertices[i], saucer->radius, &saucer->points[i]);
+        vector_mult_by_scalar(&points[i], saucer->radius, &saucer->points[i]);
 
         // Index of the opposite vertex; reflect the point over the y axis.
         k = OPPOSITE_VERTEX(i);
@@ -58,14 +58,4 @@ void saucer_set_vertices(Saucer *saucer)
         vector_add(&saucer->points[i], &saucer->position, &saucer->points[i]);
         vector_add(&saucer->points[k], &saucer->position, &saucer->points[k]);
     }
-}
-
-void saucer_draw_join(Saucer *saucer, int i)
-{
-    int j = OPPOSITE_VERTEX(i);
-
-    SDL_RenderDrawLine(
-        renderer,
-        saucer->points[i].x, saucer->points[i].y,
-        saucer->points[j].x, saucer->points[j].y);
 }
