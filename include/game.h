@@ -2,6 +2,7 @@
 #define _GAME_H_INCLUDED_
 
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include "scene.h"
 
 #define WINDOW_WIDTH 800
@@ -34,11 +35,19 @@
 #define GAME_RESPAWNING_TIME 3
 #define GAME_INVINCIBILITY_TIME 3
 
-#define SPACESHIP_STATE_OK         0x00000001
-#define SPACESHIP_STATE_THRUST     0x00000010
-#define SPACESHIP_STATE_DESTROYED  0x00000100
-#define SPACESHIP_STATE_INVINCIBLE 0x00001000
+// Sound effects
+enum {
+    SFX_FIRE,
+    SFX_EXPLOSION_LARGE,
+    SFX_EXPLOSION_MEDIUM,
+    SFX_EXPLOSION_SMALL,
+    SFX_THRUST,
+    SFX_COUNT
+};
 
+#define SFX_THRUST_CHANNEL 0
+
+extern Mix_Chunk *sounds[SFX_COUNT];
 extern SDL_Renderer *renderer;
 extern float time_step;
 extern Scene game;

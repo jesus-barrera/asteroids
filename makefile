@@ -2,14 +2,16 @@ OBJS = asteroids.c src/*.c
 
 CC = gcc
 
-INCLUDE_PATHS = -I/usr/include/SDL2 -Iinclude
+INCLUDE_PATHS = -Iinclude -IC:\SDL2\include\SDL2
 
-COMPILER_FLAGS = -D_REENTRANT -W
+LIBRARY_PATHS = -LC:\SDL2\lib
 
-LINKER_FLAGS = -L/usr/lib/x86_64-linux-gnu  -lSDL2 # -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+COMPILER_FLAGS = -D_REENTRANT
+
+LINKER_FLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer
 
 OBJ_NAME = bin/asteroids
 
 # Compile
 all : $(OBJS)
-	$(CC) $(OBJS) $(INCLUDE_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME) -lm
+	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME) -lm

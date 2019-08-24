@@ -9,6 +9,13 @@ Object *object_new(int x, int y, int radius, float direction, float speed, int n
 {
     Object *obj = (Object *)malloc(sizeof(Object));
 
+    object_set_props(obj, x, y, radius, direction, speed, num_points);
+
+    return obj;
+}
+
+void object_set_props(Object *obj, int x, int y, int radius, float direction, float speed, int num_points)
+{
     obj->position.x = x;
     obj->position.y = y;
     obj->radius = radius;
@@ -20,8 +27,6 @@ Object *object_new(int x, int y, int radius, float direction, float speed, int n
     obj->outline_end = num_points;
 
     vector_set_components(direction, speed, &obj->velocity);
-
-    return obj;
 }
 
 void object_delete(Object *obj)
@@ -208,6 +213,22 @@ void object_reset(Object *obj, int x, int y, float direction, float speed)
     // set velocity
     vector_set_components(obj->direction, speed, &obj->velocity);
 };
+
+void objects_update(Node *node)
+{
+    while (node != NULL) {
+        object_update((Object *)node->data);
+        node = node->next;
+    }
+}
+
+void objects_draw(Node *node)
+{
+    while (node != NULL) {
+        object_draw((Object *)node->data);
+        node = node->next;
+    }
+}
 
 void wrap(float *pos, int min, int max)
 {
