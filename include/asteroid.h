@@ -1,7 +1,7 @@
 /**
  * Header file for asteroid's functions such create, delete, move and draw.
  *
- * Asteroids are essentially irregular polygons contained in a circle (but not
+ * Asteroids are essentially irregular polygons contained within a circle (but not
  * exactly inscribed), thus they have an associated radius which represents the
  * maximum distance between the asteroid's center and any of its vertices.
  */

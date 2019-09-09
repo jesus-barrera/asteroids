@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include "game.h"
 #include "spaceship.h"
@@ -6,11 +7,12 @@
 #include "list.h"
 #include "timer.h"
 
-static void enter();
+static void init();
 static void update();
 static void render();
 static void handle_event(SDL_Event *event);
-void load_media();
+static void quit();
+
 void handle_keys();
 void next_level();
 void add_asteroid();
@@ -19,25 +21,18 @@ void shoot();
 SDL_bool bullet_handle_collision(Bullet *bullet, Point *tail);
 void asteroid_destroy(Asteroid *asteroid);
 
-Scene game = {enter, update, render, handle_event};
-
-SDL_Renderer *renderer;
-Mix_Chunk *sounds[SFX_COUNT];
+Scene game = {init, update, render, handle_event, quit};
 
 Node *asteroids;
 Node *bullets;
 Spaceship *ship;
 
-float time_step;
 int lives;
 int level;
 int points;
 
-void enter()
+void init()
 {
-    int i;
-
-    load_media();
 
     // Reserve channel for trust sound
     Mix_PlayChannel(SFX_THRUST_CHANNEL, sounds[SFX_THRUST], -1);
@@ -116,13 +111,8 @@ void handle_event(SDL_Event *event)
     }
 }
 
-void load_media() {
-    // Load sounds
-    sounds[SFX_FIRE] = Mix_LoadWAV("media/sound/fire.wav");
-    sounds[SFX_EXPLOSION_LARGE] = Mix_LoadWAV("media/sound/bangLarge.wav");
-    sounds[SFX_EXPLOSION_MEDIUM] = Mix_LoadWAV("media/sound/bangMedium.wav");
-    sounds[SFX_EXPLOSION_SMALL] = Mix_LoadWAV("media/sound/bangSmall.wav");
-    sounds[SFX_THRUST] = Mix_LoadWAV("media/sound/thrust.wav");
+void quit() {
+
 }
 
 void handle_keys()

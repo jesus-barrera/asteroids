@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
 #include "scene.h"
 
 #define WINDOW_WIDTH 800
@@ -35,6 +36,8 @@
 #define GAME_RESPAWNING_TIME 3
 #define GAME_INVINCIBILITY_TIME 3
 
+#define FONT_PTSIZE 16
+
 // Sound effects
 enum {
     SFX_FIRE,
@@ -48,6 +51,7 @@ enum {
 #define SFX_THRUST_CHANNEL 0
 
 extern Mix_Chunk *sounds[SFX_COUNT];
+extern TTF_Font *font;
 extern SDL_Renderer *renderer;
 extern float time_step;
 extern Scene game;

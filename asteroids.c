@@ -1,20 +1,23 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <time.h>
 
 #include "game.h"
+#include "title.h"
 #include "timer.h"
 
 SDL_bool init();
 void handle_event(SDL_Event *event);
 void render();
-void clean();
+void load_assets();
+void close();
 
-SDL_Window *window = NULL;
+SDL_Window *window;
 SDL_bool quit;
-
-Scene *current_scene = NULL;
+SDL_Renderer *renderer;
+Mix_Chunk *sounds[SFX_COUNT];
+TTF_Font *font;
+float time_step;
 
 int main(int argc, char *argv[])
 {
@@ -25,12 +28,9 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    load_assets();
+    scene_load(&title);
     timer_start(&game_timer);
-
-    current_scene = &game;
-    current_scene->enter();
-
-    quit = SDL_FALSE;
 
     while (! quit) {
         while (SDL_PollEvent(&event)) {
@@ -49,11 +49,10 @@ int main(int argc, char *argv[])
         render();
     }
 
-    clean();
+    close();
 
     return 0;
 }
-
 
 /**
  * Initialize SDL subsystems and create main objects.
@@ -74,6 +73,14 @@ SDL_bool init()
         return SDL_FALSE;
     }
 
+    // Initialize SDL_ttf
+    if ( TTF_Init() == -1 ) {
+        printf( "Could not initialize SDL_ttf: %s\n", TTF_GetError() );
+
+        return SDL_FALSE;
+    }
+
+    // Create Window
     window = SDL_CreateWindow(
                 "Asteroids",
                 SDL_WINDOWPOS_UNDEFINED,
@@ -86,6 +93,7 @@ SDL_bool init()
         return SDL_FALSE;
     }
 
+    // Create Renderer
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     if (renderer == NULL) {
@@ -122,11 +130,30 @@ void render()
     SDL_RenderPresent(renderer);
 }
 
-void clean()
-{
-    SDL_DestroyWindow(window);
-    window = NULL;
+void load_assets() {
+    // load sounds
+    sounds[SFX_FIRE] = Mix_LoadWAV("media/sound/fire.wav");
+    sounds[SFX_EXPLOSION_LARGE] = Mix_LoadWAV("media/sound/bangLarge.wav");
+    sounds[SFX_EXPLOSION_MEDIUM] = Mix_LoadWAV("media/sound/bangMedium.wav");
+    sounds[SFX_EXPLOSION_SMALL] = Mix_LoadWAV("media/sound/bangSmall.wav");
+    sounds[SFX_THRUST] = Mix_LoadWAV("media/sound/thrust.wav");
 
+    // load font
+    font = TTF_OpenFont("media/fonts/hyperspace/Hyperspace.otf", FONT_PTSIZE);
+}
+
+void close()
+{
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    TTF_CloseFont(font);
+
+    window = NULL;
+    renderer = NULL;
+    font = NULL;
+
+    // Quit SDL subsystems
+    TTF_Quit();
     Mix_Quit();
     SDL_Quit();
 }

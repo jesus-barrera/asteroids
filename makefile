@@ -8,7 +8,7 @@ LIBRARY_PATHS = -LC:\SDL2\lib
 
 COMPILER_FLAGS = -D_REENTRANT
 
-LINKER_FLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer
+LINKER_FLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_ttf
 
 OBJ_NAME = bin/asteroids
 

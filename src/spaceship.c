@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include "spaceship.h"
 #include "game.h"
@@ -49,6 +50,8 @@ Spaceship *spaceship_new(int x, int y, float direction, float speed)
 
     // Create spaceship "parts". These are used to do the "explode effect" when
     // the spaceship is destroyed.
+    ship->parts = NULL;
+
     for (i = 0; i < SPACESHIP_POINTS_COUNT; i++) {
         list_append(&ship->parts, (void *)object_new(0, 0, 0, 0, 0, 2));
     }

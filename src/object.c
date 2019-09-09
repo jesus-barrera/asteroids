@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "game.h"
+#include "geometry.h"
 #include "object.h"
 
 static void wrap(float *pos, int min, int max);
