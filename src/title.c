@@ -1,7 +1,13 @@
 #include <SDL.h>
+#include "text.h"
 #include "title.h"
 #include "game.h"
 #include "tools.h"
+
+#define TITLE_Y_OFFSET 100
+#define TITLE_PTSIZE 100
+#define SUBTITLE_Y_OFFSET (WINDOW_HEIGHT - 100)
+#define SUBTITLE_PTSIZE 25
 
 static void init();
 static void update();
@@ -9,12 +15,22 @@ static void render();
 static void handle_event(SDL_Event*);
 static void quit();
 
-SDL_Texture* title_text;
+Text *title_text;
+Text *press_text;
+
 Scene title = {init, update, render, handle_event, quit};
 
 void init()
 {
-    title_text = create_text_texture("ASTEROIDS");
+    title_text = text_create(
+        "ASTEROIDS",
+        TEXT_ALIGN_CENTER, TITLE_Y_OFFSET,
+        TITLE_PTSIZE);
+
+    press_text = text_create(
+        "Presiona una tecla para empezar",
+        TEXT_ALIGN_CENTER, SUBTITLE_Y_OFFSET,
+        SUBTITLE_PTSIZE);
 }
 
 void update()
@@ -24,7 +40,8 @@ void update()
 
 void render()
 {
-    SDL_RenderCopy(renderer, title_text, NULL, NULL);
+    text_render(title_text);
+    text_render(press_text);
 }
 
 void handle_event(SDL_Event *event)
@@ -38,6 +55,9 @@ void handle_event(SDL_Event *event)
 
 void quit()
 {
-    SDL_DestroyTexture(title_text);
+    text_destroy(title_text);
+    text_destroy(press_text);
+
+    press_text = NULL;
     title_text = NULL;
 }

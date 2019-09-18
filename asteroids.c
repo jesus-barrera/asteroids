@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <SDL_ttf.h>
 
 #include "game.h"
 #include "title.h"
@@ -16,7 +17,6 @@ SDL_Window *window;
 SDL_bool quit;
 SDL_Renderer *renderer;
 Mix_Chunk *sounds[SFX_COUNT];
-TTF_Font *font;
 float time_step;
 
 int main(int argc, char *argv[])
@@ -137,20 +137,16 @@ void load_assets() {
     sounds[SFX_EXPLOSION_MEDIUM] = Mix_LoadWAV("media/sound/bangMedium.wav");
     sounds[SFX_EXPLOSION_SMALL] = Mix_LoadWAV("media/sound/bangSmall.wav");
     sounds[SFX_THRUST] = Mix_LoadWAV("media/sound/thrust.wav");
-
-    // load font
-    font = TTF_OpenFont("media/fonts/hyperspace/Hyperspace.otf", FONT_PTSIZE);
 }
 
 void close()
 {
+    // Destroy objects
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    TTF_CloseFont(font);
 
     window = NULL;
     renderer = NULL;
-    font = NULL;
 
     // Quit SDL subsystems
     TTF_Quit();

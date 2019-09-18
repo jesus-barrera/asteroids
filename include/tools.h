@@ -15,6 +15,4 @@ struct Point {
 float uniform(float min, float max);
 int randint(int min, int max);
 
-SDL_Texture *create_text_texture(const char *text);
-
 #endif

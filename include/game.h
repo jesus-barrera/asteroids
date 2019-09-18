@@ -3,7 +3,6 @@
 
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include <SDL_ttf.h>
 #include "scene.h"
 
 #define WINDOW_WIDTH 800
@@ -51,7 +50,6 @@ enum {
 #define SFX_THRUST_CHANNEL 0
 
 extern Mix_Chunk *sounds[SFX_COUNT];
-extern TTF_Font *font;
 extern SDL_Renderer *renderer;
 extern float time_step;
 extern Scene game;
