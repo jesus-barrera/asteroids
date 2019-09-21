@@ -15,7 +15,6 @@ static void quit();
 
 void handle_keys();
 void next_level();
-void add_asteroid();
 void handle_collisions();
 void shoot();
 SDL_bool bullet_handle_collision(Bullet *bullet, Point *tail);
@@ -33,7 +32,6 @@ int points;
 
 void init()
 {
-
     // Reserve channel for trust sound
     Mix_PlayChannel(SFX_THRUST_CHANNEL, sounds[SFX_THRUST], -1);
     Mix_Pause(SFX_THRUST_CHANNEL);
@@ -155,44 +153,13 @@ void handle_keys()
 
 void next_level()
 {
-    int i, count;
+    int count;
 
-    // Set up the asteroids for the next level
     count = LEVEL_INITIAL_ASTEROIDS + (level * LEVEL_ASTEROID_INCREMENT);
 
-    for (i = 0; i < count; i++) {
-        add_asteroid();
-    }
+    asteroids = asteroid_create_many(count);
 
     level++;
-}
-
-void add_asteroid()
-{
-    Asteroid *asteroid;
-    int r, x, y;
-
-    // Asteroids are placed on the screen borders: top, bottom, left, right
-    r = rand() % 4;
-
-    if (r < 2) {
-        // top or bottom border
-        x = uniform(0, WINDOW_WIDTH);
-        y = (r == 0) ? 0 : WINDOW_HEIGHT;
-    } else {
-        // left or right border
-        x = (r == 2) ? 0 : WINDOW_WIDTH;
-        y = uniform(0, WINDOW_HEIGHT);
-    }
-
-    asteroid = asteroid_new(
-            x, y,
-            ASTEROID_LARGE,
-            uniform(0, 2 * PI),
-            ASTEROID_SPEED,
-            randint(ASTEROID_MIN_SIDES, ASTEROID_MAX_SIDES));
-
-    list_append(&asteroids, (void *)asteroid);
 }
 
 void handle_collisions()

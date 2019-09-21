@@ -1,13 +1,11 @@
 #include <SDL.h>
-#include "text.h"
 #include "title.h"
+#include "text.h"
 #include "game.h"
 #include "tools.h"
-
-#define TITLE_Y_OFFSET 100
-#define TITLE_PTSIZE 100
-#define SUBTITLE_Y_OFFSET (WINDOW_HEIGHT - 100)
-#define SUBTITLE_PTSIZE 25
+#include "asteroid.h"
+#include "list.h"
+#include <stdio.h>
 
 static void init();
 static void update();
@@ -15,8 +13,10 @@ static void render();
 static void handle_event(SDL_Event*);
 static void quit();
 
-Text *title_text;
-Text *press_text;
+static Text *title_text;
+static Text *press_text;
+
+static Node *asteroids;
 
 Scene title = {init, update, render, handle_event, quit};
 
@@ -24,22 +24,28 @@ void init()
 {
     title_text = text_create(
         "ASTEROIDS",
-        TEXT_ALIGN_CENTER, TITLE_Y_OFFSET,
-        TITLE_PTSIZE);
+        TEXT_ALIGN_CENTER, TITLE_TITLE_Y_OFFSET,
+        TITLE_TITLE_PTSIZE);
 
     press_text = text_create(
         "Presiona una tecla para empezar",
-        TEXT_ALIGN_CENTER, SUBTITLE_Y_OFFSET,
-        SUBTITLE_PTSIZE);
+        TEXT_ALIGN_CENTER, TITLE_SUBTITLE_Y_OFFSET,
+        TITLE_SUBTITLE_PTSIZE);
+
+    asteroids = asteroid_create_many(TITLE_NUM_OF_ASTEROIDS);
 }
 
 void update()
 {
-
+    objects_update(asteroids);
 }
 
 void render()
 {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+    objects_draw(asteroids);
+
     text_render(title_text);
     text_render(press_text);
 }
@@ -60,4 +66,9 @@ void quit()
 
     press_text = NULL;
     title_text = NULL;
+
+    while (asteroids) {
+        asteroid_delete((Asteroid *)asteroids->data);
+        asteroids = destroy_node(asteroids);
+    }
 }

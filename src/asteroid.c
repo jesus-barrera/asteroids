@@ -37,3 +37,36 @@ void asteroid_set_vertices(Asteroid *asteroid)
         angle_min = angle_max;
     }
 }
+
+Node *asteroid_create_many(int count)
+{
+    Node *asteroids = NULL;
+    Asteroid *asteroid;
+    int i, r, x, y;
+
+    for (i = 0; i < count; i++) {
+        // asteroids are placed on the screen borders: top, bottom, left, right
+        r = rand() % 4;
+
+        if (r < 2) {
+            // top or bottom border
+            x = uniform(0, WINDOW_WIDTH);
+            y = (r == 0) ? 0 : WINDOW_HEIGHT;
+        } else {
+            // left or right border
+            x = (r == 2) ? 0 : WINDOW_WIDTH;
+            y = uniform(0, WINDOW_HEIGHT);
+        }
+
+        asteroid = asteroid_new(
+                x, y,
+                ASTEROID_LARGE,
+                uniform(0, 2 * PI),
+                ASTEROID_SPEED,
+                randint(ASTEROID_MIN_SIDES, ASTEROID_MAX_SIDES));
+
+        list_append(&asteroids, (void *)asteroid);
+    }
+
+    return asteroids;
+}
