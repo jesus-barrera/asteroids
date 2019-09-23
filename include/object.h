@@ -26,6 +26,7 @@ void object_update(Object *obj);
 void object_move(Object *obj, Point *displacement);
 void object_rotate(Object *obj, float radians);
 SDL_bool object_check_collision(Object *a, Object *b);
+SDL_bool object_circle_collision(Object *a, Object *b);
 SDL_bool object_intersect_line(Object *a, Point p1, Point p2);
 void object_draw(Object *obj);
 void object_draw_lines(Object *obj, int *points);

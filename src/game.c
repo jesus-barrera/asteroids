@@ -240,10 +240,9 @@ SDL_bool bullet_handle_collision(Bullet *bullet, Point *tail)
     while (*node_ref != NULL) {
         asteroid = (Asteroid *)(*node_ref)->data;
 
-        if (object_intersect_line(
-                (Object *)asteroid,
-                *tail,
-                bullet->points[BULLET_HEAD])) {
+        if (object_circle_collision(bullet, asteroid) &&
+            object_intersect_line(
+                (Object *)asteroid, *tail, bullet->points[BULLET_HEAD])) {
 
             asteroid_destroy(asteroid);
             asteroid_delete(asteroid);

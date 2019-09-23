@@ -93,14 +93,7 @@ void object_rotate(Object *obj, float radians)
 
 SDL_bool object_check_collision(Object *a, Object *b)
 {
-    // calculate the euclidean distance between the objects
-    float distance = sqrt(
-                        pow(b->position.x - a->position.x, 2) +
-                        pow(b->position.y - a->position.y, 2));
-
-    // Test if the object's circumscribed circles overlap, if not, then they aren't
-    // close enough to collide.
-    if (distance > (a->radius + b->radius)) {
+    if (! object_circle_collision(a, b)) {
         return SDL_FALSE;
     }
 
@@ -126,6 +119,20 @@ SDL_bool object_check_collision(Object *a, Object *b)
     }
 
     return SDL_FALSE;
+}
+
+SDL_bool object_circle_collision(Object *a, Object *b)
+{
+    // Calculate the euclidean distance between the objects
+    float distance = sqrt(
+                        pow(b->position.x - a->position.x, 2) +
+                        pow(b->position.y - a->position.y, 2));
+
+    // Test if the object's circumscribed circles overlap, if not, then they aren't
+    // close enough to collide.
+    if (distance > (a->radius + b->radius)) {
+        return SDL_FALSE;
+    }
 }
 
 SDL_bool object_intersect_line(Object *obj, Point p1, Point p2)
