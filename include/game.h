@@ -5,8 +5,8 @@
 #include <SDL_mixer.h>
 #include "scene.h"
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
 
 #define SPACESHIP_MAX_SPEED 300
 #define SPACESHIP_ACCELERATION 0.9
@@ -26,8 +26,6 @@
 #define GAME_INITIAL_LIVES 3
 #define GAME_RESPAWNING_TIME 3
 #define GAME_INVINCIBILITY_TIME 3
-
-#define FONT_PTSIZE 16
 
 // Sound effects
 enum {
